@@ -1,19 +1,17 @@
 
-import sys, socket, scapy,os
-from time import sleep
-
+import sys, socket, scapy
 
 def connect_to_server(dest,port):
 
     try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print ("Socket successfully created")
-        s.connect((dest, port))
+        sock.connect((dest, port))
     except:  # If fail, return null
         print("cannot connect to IP address {} at port {}".format(dest, str(port)))
         sys.exit()
 
-    return s
+    return sock
 
 if __name__ == '__main__':
 
@@ -23,7 +21,9 @@ if __name__ == '__main__':
 
     source = str(input("enter source \n"))
 
-    sock = connect_to_server(dest,int(port))
+    sock = connect_to_server(dest,int(port)) #opens the socket
+
+
 
     sock.close()
 
