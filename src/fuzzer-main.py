@@ -1,6 +1,7 @@
 
-import sys, socket, scapy,os
+import sys, socket, os
 from time import sleep
+from scapy.all import *
 
 
 def connect_to_server(dest,port):
@@ -24,6 +25,8 @@ if __name__ == '__main__':
     source = str(input("enter source \n"))
 
     sock = connect_to_server(dest,int(port))
+    mystream = StreamSocket(sock)
+    some_packet=IP(dst="10.1.1.1")/TCP(dport=9000)/fuzz(Raw())
 
     sock.close()
 
