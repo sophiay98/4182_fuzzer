@@ -11,12 +11,11 @@ class IPFuzzer(object):
         self.ack = 0
         self.dataofs = None
         self.reserved= 0
-        self.flags = 2
-        self.window = 8192
-        self.chksum = None
+        self.flags = "00000000"
+        self.window = (0,10000)
+        self.chksum = "0" * 32
         self.urgptr = 0
         self.options = ({})
-
     def create_packets(self):
 
 
