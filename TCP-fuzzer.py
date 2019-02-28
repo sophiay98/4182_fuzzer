@@ -1,4 +1,4 @@
-import scapy
+from scapy.all import *
 
 
 """FROM toschprod.wordpress.com
