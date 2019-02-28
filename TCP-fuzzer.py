@@ -27,8 +27,8 @@ class IPFuzzer(object):
         self._payload = payload
         self.sport = (0,10000)
         self.dport = (0,10000)
-        self.seq= 0
-        self.ack = 0
+        self.seq= (0, 2 ** 32)
+        self.ack = (0, 2 ** 32)
         self.dataoffs = None
         self.reserved= 0
         self.flags = "0" * 9
