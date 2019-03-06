@@ -1,5 +1,5 @@
 from scapy.all import *
-
+import random
 
 """FROM toschprod.wordpress.com
 
@@ -20,58 +20,42 @@ from scapy.all import *
 """
 
 
-class IPFuzzer(object):
-    def __init__(self,source="127.0.0.1",dest="192.168.1.19",payload=None,fields=[]):
+class TCPFuzzer(object):
+    def __init__(self, source="127.0.0.1", dest="127.0.0.1", payload=None, fields=[]):
         self._source = source
         self._dest = dest
         self._payload = payload
-        self.sport = (0,10000)
-        self.dport = (0,10000)
-        self.seq= (0, 2 ** 32)
-        self.ack = (0, 2 ** 32)
-        self.dataoffs = None
-        self.reserved= 0
-        self.flags = "0" * 9
-        self.window = (0,10000)
-        self.chksum = "0" * 32
-        self.urgptr = 0
-        self.options = ({})
+        self.fields = {
+            "sport": (0, 10000),
+            "dport": (0, 10000),
+            "seq": (0, 2 ** 32),
+            "ack": (0, 2 ** 32),
+            "dataofs": (0, 16),
+            "reserved": (0, 7),
+            "flags": (0, 2 ** 9 - 1),
+            "window": (0, 10000),
+            "chksum": (0, 2 ** 16),
+            "urgptr": (0, 2 ** 16),
+            "options": ({})
+        }
+        self.tcp = TCP(sport=80, dport=8000)
+        self.ip = IP(source=self._source, dest=self._dest)
+        self.sent = 0
 
     def create_packets(self):
         pass
 
-    def fuzz_sport(self):
-        pass
+    def fuzz(self, field_name, all=False):
+        tcp = self.tcp
+        r = []
+        for i in range(self.fields[field_name][0], self.fields[field_name][1]):
+            setattr(tcp, field_name, i)
+            r.append(Ether() / self.ip / tcp / self._payload)
+        for packet in r:
+            sendp(packet)
+            self.sent += 1
 
-    def fuzz_dport(self):
-        pass
-
-    def fuzz_seq(self):
-        pass
-
-    def fuzz_ack(self):
-        pass
-
-    def fuzz_dataoffs(self):
-        pass
-
-    def fuzz_reserved(self):
-        pass
-
-    def fuzz_flags(self):
-        pass
-
-    def fuzz_window(self):
-        pass
-
-    def fuzz_chksum(self):
-        pass
-
-    def fuzz_urgptr(self):
-        pass
-
-    def fuzz_options(self):
-        pass
-
-
-
+    def send(self, packet_list):
+        for packet in packet_list:
+            self.sent += 1
+            sendp()
