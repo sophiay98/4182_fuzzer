@@ -36,7 +36,7 @@ class TCPFuzzer(object):
             "window": (0, 10000),
             "chksum": (0, 2 ** 16),
             "urgptr": (0, 2 ** 16),
-            "options": ({})
+            "options": (0, 2 ** 100)
         }
         self.tcp = TCP(sport=80, dport=8000)
         self.ip = IP(source=self._source, dest=self._dest)
