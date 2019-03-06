@@ -45,10 +45,16 @@ class TCPFuzzer(object):
     def create_packets(self):
         pass
 
-    def fuzz(self, field_name, all=False):
+    def fuzz(self, field_name, all=False, num_trials=10):
         tcp = self.tcp
         r = []
-        for i in range(self.fields[field_name][0], self.fields[field_name][1]):
+
+        if self.fields[field_name][1] - self.fields[field_name][0] > 10000:
+            trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(10)]
+        else:
+            trial = range(self.fields[field_name][0], self.fields[field_name][1])
+
+        for i in trial:
             setattr(tcp, field_name, i)
             r.append(Ether() / self.ip / tcp / self._payload)
         for packet in r:
