@@ -9,12 +9,5 @@ def packet_callback(packet):
         pkt = str(packet[TCP].payload)
 
         print(pkt)
-        try:
-            if packet[IP] is not None and packet[IP].dport == 7999:
-                print("\n{} ----HTTP----> {}:{}:\n{}".format(packet[IP].src, packet[IP].dst, packet[IP].dport,
-                                                             str(bytes(packet[TCP].payload))))
-        except IndexError as e:
-            print(e)
-
 
 sniff(filter="tcp", prn=packet_callback, store=0)
