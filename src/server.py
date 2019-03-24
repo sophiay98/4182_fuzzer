@@ -22,9 +22,11 @@ def read_pattern(file_name="pattern"):
 def packet_callback(packet, pattern=read_pattern()):
     if packet[TCP].payload:
         pkt = str(packet[TCP].payload)
-        if packet[IP]:
+        try:
             print("type: " + str(type(packet[IP])))
             print("IP: " + str(packet[IP].src))
+        except Exception as e:
+            print(e)
         try:
             if True: # packet[IP]:
                 print(pattern)
