@@ -3,33 +3,39 @@ import binascii
 import logging
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 import re
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import HTTPServer
 
-def packet_callback(packet, file_name="server_pattern"):
-    if packet[TCP].payload:
-        pkt = str(packet[TCP].payload)
+valid = 0
+invalid = 0
 
-        print(pkt)
-        try:
-            if packet[IP] and packet[IP].dport == 80:
-                if packet[TCP].payload == pattern:
-                    pass
-                else:
-                    pass
-        except Exception as e:
-            print(e)
-
-def read_pattern(file_name="server_pattern"):
-    file_name='server_pattern'
-    with open(file_name, 'rb') as f:
+def read_pattern(file_name="pattern"):
+    with open(file_name) as f:
         pattern = f.read()
+    pattern = bytes.fromhex(pattern)
     print(pattern)
-    print(list(pattern))
     # print(pattern.encode("utf-8"))
-    print(hex(int(pattern,16)))
     # if len(pattern) % 2 != 0:
     #     pattern = "0" + pattern
     return pattern
+
+
+def packet_callback(packet, pattern=read_pattern()):
+    if packet[TCP].payload:
+        pkt = str(packet[TCP].payload)
+        if packet[IP]:
+            print("type: " + str(type(packet[IP])))
+            print("IP: " + str(packet[IP].src))
+        try:
+            if True: # packet[IP]:
+                print(pattern)
+                print(packet[TCP].payload)
+                if pattern in bytes(packet[TCP].payload[:len(pattern)]):
+                    print("wow!")
+                else:
+                    print("error")
+
+        except Exception as e:
+            print(e)
 
 pattern = read_pattern()
 sniff(filter="tcp", prn=packet_callback, store=0)
