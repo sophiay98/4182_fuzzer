@@ -32,7 +32,7 @@ def packet_callback(packet, pattern=read_pattern()):
                 if pattern in bytes(packet[TCP].payload[:len(pattern)]):
                     print("wow!")
                     tcp = TCP(sport=80, dport=8000)
-                    ip = IP(dest=packet[IP].src)
+                    ip = IP(dst=packet[IP].src)
                     payload = "0xff"
                     response = Ether()/tcp/ip/payload
                     sendp(response)

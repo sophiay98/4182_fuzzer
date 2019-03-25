@@ -5,7 +5,9 @@ sport = random.randint(1024,65535)
 # SYN
 ip=IP(src='192.168.1.13',dst='192.168.1.11')
 SYN=TCP(sport=sport,dport=8909,flags='S',seq=1000)
-SYNACK=sr1(ip/SYN)
+payload= b'\x15'
+SYNACK=sr1(ip/SYN/payload)
+print(SYNACK[TCP].payload)
 
 # ACK
 my_ack = SYNACK.seq + 1
