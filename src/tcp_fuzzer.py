@@ -64,4 +64,4 @@ class TCPFuzzer(object):
     def send(self, packet_list):
         for packet in packet_list:
             self.sent += 1
-            sendp()
+            sendp(packet)
