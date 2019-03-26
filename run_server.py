@@ -18,6 +18,7 @@ atexit.register(print_v_i)
 
 pattern = "asd"
 sock = L3RawSocket()
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.settimeout(None)
@@ -26,29 +27,32 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((ip, int(port)))
             break
         except Exception as e:
+            time.sleep(1)
             continue
     s.listen(1)
     print("server ready!")
     print("Listening on port: " + str(port))
     while True:
         conn, addr = s.accept()
+
+        def close_conn():
+            conn.close()
+        atexit.register(close_conn)
+
         with conn:
             print('Connection address:', addr)
             data = ''
             while conn:
                 data = str(conn.recv(1024))
-                if data != "b''":
-                    print(data)
-                else:
-                    continue
+                print(data)
                 if pattern in data:
                     print("valid!")
                     valid += 1
-                    conn.sendall(b"0x00")
+                    conn.sendall(b"0x00asdf")
                 else:
                     print("invalid!")
                     invalid += 1
-                    conn.sendall(b"0xff")
+                    conn.sendall(b"0xffasdf")
                 if not data:
                     break
                 if not data.endswith('\r\n'):
