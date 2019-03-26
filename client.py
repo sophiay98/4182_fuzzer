@@ -50,6 +50,8 @@ class Client(object):
         self.connected = False
         self.ack_Thread = None
         self.timeout = 5
+        self.valid = 0
+        self.invalid = 0
 
     def do_ack(self, p):
         self.ack = p[TCP].seq + len(p[Raw])
@@ -93,7 +95,7 @@ class Client(object):
         SYNACK = sr1(ip / SYN, timeout=self.timeout)
         if not SYNACK:
             raise TimeoutError
-        SYNACK.show()
+        # SYNACK.show()
 
         # ACK
         self.ack = SYNACK[TCP].seq + 1
@@ -106,7 +108,7 @@ class Client(object):
 
     def send(self, payload):
         packet = self.ip / TCP(sport=self.sport, dport=self.dport, flags='PA', seq=self.seq, ack=self.ack) / payload
-        packet.show()
+        # packet.show()
         ack = sr1(packet, timeout=self.timeout)
         self.seq += len(packet[Raw])
 
@@ -130,6 +132,7 @@ if __name__ =="__main__":
     time.sleep(1)
     myclient.send(b'\x15')
     i = ""
+    time.sleep(10)
     while i != "q" and i != "Q":
         i = input("input packet to send: ")
         myclient.send(i)
