@@ -22,11 +22,11 @@ def sniff(self):
     s.close()
     self._ackThread = None
 
-
+pattern = "asd"
 sock = L3RawSocket()
-print("server ready!")
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.settimeout(None)
     while True:
         try:
             s.bind((ip, int(port)))
@@ -34,6 +34,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         except Exception as e:
             continue
     s.listen(1)
+    print("server ready!")
     print("Listening on port: " + str(port))
     while True:
         conn, addr = s.accept()
@@ -41,12 +42,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             print('Connection address:', addr)
             data = ''
             while conn:
-                data += str(conn.recv(1024))
-                print(data)
+                data = str(conn.recv(1024))
+                if data != "b''":
+                    print(data)
+                    continue
                 if pattern in data:
-                    conn.send(b"0x00")
+                    print("valid!")
+                    conn.sendall(b"0x00asdf")
                 else:
-                    conn.send(b"0xff")
+                    print("invalid!")
+                    conn.sendall(b"0xffasdf")
                 if not data:
                     break
                 if not data.endswith('\r\n'):
