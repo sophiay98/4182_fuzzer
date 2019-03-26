@@ -44,15 +44,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             data = ''
             while conn:
                 data = str(conn.recv(1024))
-                print(data)
+                if data != "b''":
+                    print(data)
+                else:
+                    continue
                 if pattern in data:
                     print("valid!")
                     valid += 1
-                    conn.sendall(b"0x00asdf")
+                    conn.sendall(b"0x000x000x000x00")
                 else:
                     print("invalid!")
                     invalid += 1
-                    conn.sendall(b"0xffasdf")
+                    conn.sendall(b"0xff0xff0xff0xff")
                 if not data:
                     break
                 if not data.endswith('\r\n'):
