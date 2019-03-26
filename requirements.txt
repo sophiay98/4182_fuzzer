@@ -1,3 +1,1 @@
 scapy==2.4.2
-selenium
-beautifulsoup4
