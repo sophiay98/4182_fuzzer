@@ -1,26 +1,20 @@
 
 import socket
 from scapy.all import *
-
+import atexit
 ip = '192.168.1.11'
 port = 1338
 
+valid = 0
+invalid = 0
 
 
+def print_v_i():
+    print(valid)
+    print(invalid)
 
-def sniff(self):
-    s = L3RawSocket()
-    while self.connected:
-        p = s.recv(MTU)
-        if p.haslayer(TCP) and p.haslayer(Raw) \
-                and p[TCP].dport == self.sport:
-            self.do_ack(p)
-        if p.haslayer(TCP) and p[TCP].dport == self.sport \
-                and p[TCP].flags & 0x01 == 0x01:  # FIN
-            self.ack_rclose()
 
-    s.close()
-    self._ackThread = None
+atexit.register(print_v_i)
 
 pattern = "asd"
 sock = L3RawSocket()
@@ -45,13 +39,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 data = str(conn.recv(1024))
                 if data != "b''":
                     print(data)
+                else:
                     continue
                 if pattern in data:
                     print("valid!")
-                    conn.sendall(b"0x00asdf")
+                    valid += 1
+                    conn.sendall(b"0x00")
                 else:
                     print("invalid!")
-                    conn.sendall(b"0xffasdf")
+                    invalid += 1
+                    conn.sendall(b"0xff")
                 if not data:
                     break
                 if not data.endswith('\r\n'):
@@ -60,3 +57,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 for line in lines:
                     print(line)
                 data = ''
+
