@@ -3,61 +3,45 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Fuzzing IP, Transport(TCP), Payloads with scapy.')
-    parser.add_argument('-F', '--file', action='store', dest='file_name', default='default.csv',
+    parser.add_argument('-F', '-file', action='store', dest='file_name', default='default.csv',
                         help='select file to read the fuzzing data')
-    parser.add_argument('-I', '--ip', action='store_true', default=False,
+    parser.add_argument('-I', '-ip', action='store_true', default=False,
                         help='run fuzzing for IP layer')
-    parser.add_argument('-T', '--tcp', action='store_true', default=False,
+    parser.add_argument('-T', '-tcp', action='store_true', default=False,
                         help='run fuzzing for TCP layer')
-    parser.add_argument('-P', '--payload', action='store_true', default=False,
+    parser.add_argument('-P', '-payload', action='store_true', default=False,
                         help='run fuzzing for Payloads')
-    parser.add_argument('--sport', action='append_const', dest='tcp_field',
-                        const='sport',
-                        default=[],
-                        help='Add sport to TCP fields to test')
-    parser.add_argument('--dport', action='append_const', dest='tcp_field',
-                        const='dport',
-                        default=[],
-                        help='Add dport to TCP fields to test')
-    parser.add_argument('--seq', action='append_const', dest='tcp_field',
-                        const='seq',
-                        default=[],
-                        help='Add seq to TCP fields to test')
-    parser.add_argument('--ack', action='append_const', dest='tcp_field',
-                        const='ack',
-                        default=[],
-                        help='Add ack to TCP fields to test')
-    parser.add_argument('--dataofs', action='append_const', dest='tcp_field',
-                        const='dataofs',
-                        default=[],
-                        help='Add dataofs to TCP fields to test')
-    parser.add_argument('--reserved', action='append_const', dest='tcp_field',
-                        const='reserved',
-                        default=[],
-                        help='Add reserved to TCP fields to test')
-    parser.add_argument('--flags', action='append_const', dest='tcp_field',
-                        const='rflags',
-                        default=[],
-                        help='Add flags to TCP fields to test')
-    parser.add_argument('--window', action='append_const', dest='tcp_field',
-                        const='window',
-                        default=[],
-                        help='Add window to TCP fields to test')
-    parser.add_argument('--chksum', action='append_const', dest='tcp_field',
-                        const='chksum',
-                        default=[],
-                        help='Add chksum to TCP fields to test')
-    parser.add_argument('--urgptr', action='append_const', dest='tcp_field',
-                        const='urgptr',
-                        default=[],
-                        help='Add urgptr to TCP fields to test')
-    parser.add_argument('--options', action='append_const', dest='tcp_field',
-                        const='options',
-                        default=[],
-                        help='Add options to TCP fields to test')
+    parser.add_argument('-tA', '-tall', action='store_true', default=False,
+                        help='run fuzzing for all fields for TCP layer')
+    parser.add_argument('-iA', '-iall', action='store_true', default=False,
+                        help='run fuzzing for all fields for IP layer')
 
+    tcp_fields = (
+        "sport",
+        "dport",
+        "seq",
+        "ack",
+        "dataofs",
+        "reserved",
+        "flags",
+        "window",
+        "chksum",
+        "urgptr",
+        "options"
+    )
+    for f in tcp_fields:
+        parser.add_argument('-t' + f, action='append_const',
+                            dest='tcp_field', const=f, default=[],
+                            help='Add ' + f + ' to TCP fields for fuzzing')
+
+    ip_fields = ("len", "proto", "ihl",
+                 "flags", "frag",
+                 "ttl")
+    for f in ip_fields:
+        parser.add_argument('-i' + f, action='append_const',
+                            dest='ip_field', const=f, default=[],
+                            help='Add ' + f + ' to IP fields for fuzzing')
 
     args = parser.parse_args()
     print(args)
     print(args.file_name)
-    print(args.accumulate(args.integers))

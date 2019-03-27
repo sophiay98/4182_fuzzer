@@ -39,3 +39,7 @@ before running client/server side programs to suppress RST flags.
 2.Since the server's response only has to contain 0x00 or 0xff for each payload sent, the actual response is "0x00" * 4 and "0xff" * 4, respectively.
 
 3.The server does __not__ accept empty payloads.
+
+4.issues may arise because of the firewall & RTS flags that gets automatically generated during establishing TCP connection with the server.
+
+5.
