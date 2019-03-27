@@ -29,4 +29,13 @@ before running client/server side programs to suppress RST flags.
 
 ```input packet to send: ```, type in any text and check the server end.
 
-If your message appears with the appropriate valid/invalid message, success!
+9.If your message appears with the appropriate valid/invalid message, success!
+
+10.To quit, press Ctrl+V on the server side. input Q or q on the input prompt to exit on the client side.
+
+####Server Comments
+1.server can receive up to 128 bytes of payload at a time. Any payload longer than that will be sliced after reaching 128 bytes.
+
+2.Since the server's response only has to contain 0x00 or 0xff for each payload sent, the actual response is "0x00" * 4 and "0xff" * 4, respectively.
+
+3.The server does __not__ accept empty payloads.
