@@ -1,4 +1,6 @@
 from src.tcp_fuzzer import TCPFuzzer
+from src.ip_fuzzer import IPFuzzer
+from src.app_fuzzer import APPFuzzer
 import argparse
 
 if __name__ == "__main__":
@@ -15,7 +17,8 @@ if __name__ == "__main__":
                         help='run fuzzing for all fields for TCP layer')
     parser.add_argument('-iA', '-iall', action='store_true', default=False,
                         help='run fuzzing for all fields for IP layer')
-
+    parser.add_argument('-v', '-verbose', action='store', default=0,
+                        help='run fuzzing for Payloads')
     tcp_fields = (
         "sport",
         "dport",
@@ -45,3 +48,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
     print(args.file_name)
+
+    if args.I:
