@@ -2,7 +2,11 @@
 import socket
 from scapy.all import *
 import atexit
-ip = '192.168.1.11'
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+ip = s.getsockname()[0]
+s.close()
 port = 1338
 
 valid = 0
@@ -43,12 +47,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             print('Connection address:', addr)
             data = ''
             while conn:
-                data = str(conn.recv(1024))
+                data = str(conn.recv(128))
                 if data != "b''":
                     print(data)
                 else:
                     continue
-                if pattern in data:
+                if pattern in data[:len(pattern)]:
                     print("valid!")
                     valid += 1
                     conn.sendall(b"0x000x000x000x00")
