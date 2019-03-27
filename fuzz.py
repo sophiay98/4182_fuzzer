@@ -35,6 +35,26 @@ if __name__ == "__main__":
                         const='reserved',
                         default=[],
                         help='Add reserved to TCP fields to test')
+    parser.add_argument('--flags', action='append_const', dest='tcp_field',
+                        const='rflags',
+                        default=[],
+                        help='Add flags to TCP fields to test')
+    parser.add_argument('--window', action='append_const', dest='tcp_field',
+                        const='window',
+                        default=[],
+                        help='Add window to TCP fields to test')
+    parser.add_argument('--chksum', action='append_const', dest='tcp_field',
+                        const='chksum',
+                        default=[],
+                        help='Add chksum to TCP fields to test')
+    parser.add_argument('--urgptr', action='append_const', dest='tcp_field',
+                        const='urgptr',
+                        default=[],
+                        help='Add urgptr to TCP fields to test')
+    parser.add_argument('--options', action='append_const', dest='tcp_field',
+                        const='options',
+                        default=[],
+                        help='Add options to TCP fields to test')
 
 
     args = parser.parse_args()

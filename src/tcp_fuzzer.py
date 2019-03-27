@@ -70,5 +70,6 @@ class TCPFuzzer(object):
             self.sent += 1
             sendp(packet)
 
-t = TCPFuzzer()
-t.fuzz(all=True)
+if __name__ == "__main__":
+    t = TCPFuzzer()
+    t.fuzz(all=True)
