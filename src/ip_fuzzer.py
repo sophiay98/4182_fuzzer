@@ -12,6 +12,7 @@ import numpy as np
 
 
 class IPFuzzer():
+
     def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload=None):
         self._source = source
         self._dest = dest
@@ -23,36 +24,33 @@ class IPFuzzer():
 
     def _get_payload(self):
         try:
-            f = open(self._payload_addr,"r")
-            paylaods = f.readlines()
-            if len(paylaods) < 1:
+            f = open(self._payload_addr, "r")
+            payloads = f.readlines()
+            if len(payloads) < 1:
+                f.close()
                 raise IOError
-            f.close()
-            #TODO : restriction on the length of the payload?
+            # TODO : restriction on the length of the payload?
 
-            #if value in the file is not hex string
+            # if value in the file is not hex string
             try:
-                int(paylaods[0],16)
-                #only reads the first line of the file
-                print("using payload: " + paylaods[0])
-                return paylaods[0]
+                payload = bytes.fromhex(payloads[0]) # only reads the first line of the file
+                print("using payload: 0x" + payloads[0])
             except ValueError:
-                print("%s cannot be parsed as hex" %(paylaods[0]))
+                print("%s cannot be parsed as hex" % (payloads[0]))
                 print("changing the file to include default payload 0x00...")
                 f = open(self._payload_addr, "w")
-                payload = "0x00"
+                payload = "00"
                 f.write(payload)
                 f.close()
-                return payload
-
+                payload = bytes.fromhex("00")
         except IOError:
             f = open(self._payload_addr, "w")
-            payload = "0x00"
-            f.write(payload)
+            payload = bytes.fromhex("00")
+            f.write("00")
             f.close()
             print("failure while reading value in the file")
             print("created new file with payload: 0x00")
-            return payload
+        return payload
 
     def _fuzz_from_file(self,file,payload):
         pckts = []
