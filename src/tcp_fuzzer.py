@@ -101,7 +101,7 @@ class TCPFuzzer(object):
     def send(self, packet_list):
         for packet in packet_list:
             self.sent += 1
-            sendp(packet)
+            sendp(packet, verbose=self.verbose)
 
 if __name__ == "__main__":
     t = TCPFuzzer()
