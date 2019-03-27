@@ -27,24 +27,21 @@ from scapy.all import *
 # send(ip/TCP(dport=65432, seq=1010)/payload)
 # send(ip/TCP(dport=65432, seq=1014)/payload)
 
-# !/usr/bin/env python
 from scapy.all import *
 import time
+import atexit
 
 
 # VARIABLES
 
 class Client(object):
 
-    def __init__(self, ip=None, tcp=None):
-        self.src = '192.168.1.13'
-        self.dst = '192.168.1.11'
-        if not ip:
-            self.ip = IP(src=self.src, dst=self.dst)
-        else:
-            self.ip = ip
-        self.sport = 1337
-        self.dport = int(1338)
+    def __init__(self, src='192.168.1.13', dst='192.168.1.11',sport='1337',dport='1338'):
+        self.src = src
+        self.dst = dst
+        self.ip = IP(src=self.src, dst=self.dst)
+        self.sport = int(sport)
+        self.dport = int(dport)
         self.seq = 0
         self.ack = 0
         self.connected = False
@@ -52,6 +49,7 @@ class Client(object):
         self.timeout = 5
         self.valid = 0
         self.invalid = 0
+        self.total = 0
 
     def do_ack(self, p):
         self.ack = p[TCP].seq + len(p[Raw])
@@ -68,7 +66,7 @@ class Client(object):
 
     def ackthread_start(self):
         self._ackThread = Thread(name='AT', target=self.sniff)
-
+        self._ackThread.setDaemon(True)
         self._ackThread.start()
 
     def sniff(self):
@@ -76,8 +74,15 @@ class Client(object):
         while self.connected:
             p = s.recv(MTU)
             if p.haslayer(TCP) and p.haslayer(Raw) \
+                    and p[TCP].dport == self.sport and b'0xff' in p.payload:
+                print(p.payload)
+                self.invalid += 1
+            if p.haslayer(TCP) and p.haslayer(Raw) \
+                    and p[TCP].dport == self.sport and b'0x00' in p.payload:
+                print(p.payload)
+                self.valid += 1
+            if p.haslayer(TCP) and p.haslayer(Raw) \
                     and p[TCP].dport == self.sport:
-                print(p)
                 self.do_ack(p)
             if p.haslayer(TCP) and p[TCP].dport == self.sport \
                     and p[TCP].flags & 0x01 == 0x01:
@@ -111,6 +116,7 @@ class Client(object):
         # packet.show()
         ack = sr1(packet, timeout=self.timeout)
         self.seq += len(packet[Raw])
+        self.total += 1
 
     def close(self):
         self.connected = False
@@ -126,13 +132,21 @@ class Client(object):
 
 
 if __name__ =="__main__":
-    myclient = Client()
+    arglist = sys.argv
+
+    try:
+        src = arglist[1]
+        dst = arglist[2]
+        sport = arglist[3]
+        dport = arglist[4]
+        myclient = Client(src, dst, sport, dport)
+    except IndexError:
+        print("Not enough arguments given.\nThe full format is sudo python3 client.py src dst sport dport")
+        print("Proceeding with default values")
+        myclient = Client()
+
     myclient.connect()
-    myclient.send("wow!")
-    time.sleep(1)
-    myclient.send(b'\x15')
     i = ""
-    time.sleep(10)
     while i != "q" and i != "Q":
         i = input("input packet to send: ")
         myclient.send(i)
