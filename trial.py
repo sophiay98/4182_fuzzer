@@ -1,66 +1,119 @@
 from scapy.all import *
 
+import pandas as pd
+import numpy as np
 
-class APPFuzzer():
-    def __init__(self,source="127.0.0.1", dest="127.0.0.1",dport="80"):
+
+class IPFuzzer():
+
+    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload="./payload", verbose=0):
+        self._source = source
         self._dest = dest
-        self._pckt = Ether()/IP(dst=dest,src=source)/TCP(dport=dport)
+        self._payload = payload
+        self._field_val_map = {"len":"0xffff",
+                               "proto":"0xff",
+                               "ihl":"0xf",
+                               "flags":"0b111",
+                               "frag":"0b1111111111111",
+                               "ttl":"0xff",
+                               "tos":"0xff",
+                               "id":"0xffff",
+                               "chksum":"0xffff",
+                               "version":"0xf",}
+        self._payload_addr = payload
+        self.verbose = verbose
 
-    def _get_payload(self,addr):
-        pckts = []
+    def _get_payload(self):
         try:
-            f = open(addr, "r")
+            f = open(self._payload_addr, "r")
             payloads = f.readlines()
             if len(payloads) < 1:
-                print("there's nothing in the file")
-                print("terminating...")
-                return pckts
-            #if value in the file is not hex string
-            for payload in payloads:
-                try:
-                    p = bytes.fromhex(payload)  # only reads the first line of the file
-                    print("using payload: 0x" + payload)
-                    pckts.append(self._pckt / p)
-                except ValueError:
-                    print("%s cannot be parsed as hex" % (payload))
-                    print("continue parsing the remaining of the file %s ..."%(addr))
+                f.close()
+                raise IOError
+
+            # if value in the file is not hex string
+            try:
+                payload = bytes.fromhex(payloads[0]) # only reads the first line of the file
+                print("using payload: 0x" + payloads[0])
+            except ValueError:
+                print("%s cannot be parsed as hex" % (payloads[0]))
+                print("changing the file to include default payload 0x00...")
+                f = open(self._payload_addr, "w")
+                payload = "00"
+                f.write(payload)
+                f.close()
+                payload = bytes.fromhex("00")
         except IOError:
-            print("cannot open file: %s" %(addr))
-            print("terminating...")
-        return pckts
+            f = open(self._payload_addr, "w")
+            payload = bytes.fromhex("00")
+            f.write("00")
+            f.close()
+            print("failure while reading value in the file")
+            print("created new file with payload: 0x00")
+        return payload
 
-    def _rand_payload(self,test=0,size=None,min_len=2,max_len=128):
+    def _fuzz_from_file(self,file,payload):
         pckts = []
-        if size:
-            size=size*2
-        for _ in range(test):
-            length=size
-            if not size:
-                length = random.randint(min_len, max_len)*2
-            payload = ''.join(
-                random.choice(list(chr(_) for _ in range(ord('a'), ord('f') + 1)) + list(str(_) for _ in range(10))) for _ in
-                range(length))
-            pckts.append(self._pckt / bytes.fromhex(payload))
+
+        #creates pandas dataframe from the file
+        try:
+            fields = pd.read_csv(file)
+        except FileNotFoundError:
+            print("unable to read the file: %s", file)
+            return pckts
+
+        fields_dict = {col: list(fields[col]) for col in fields.columns}
+
+        #read in csv file with the first line indicating fields' names
+        for index in range(len(fields_dict.values())-1):
+            print(index)
+            ip = IP(dst=self._dest,src=self._source)
+            for field in fields_dict.keys():
+                #set parameter if value is not null
+                if not np.isnan(fields_dict[field][index]):
+                    setattr(ip, field, fields_dict[field][index])
+                pckts.append(ip / TCP() / payload)
+
         return pckts
 
-    def fuzz(self,test=0, size=None,file=None,min_len=0,max_len=128):
+    def _fuzz_by_fields(self, fields=None,payload="0x00"):
+        pckts = []
+        special_fields = set()
+
+        if not fields:
+            fields = self._field_val_map.keys()
+
+        for field in fields:
+            print("fuzzing %s..."%(field))
+            ip = IP(dst=self._dest,src=self._source)  # create default packet
+
+            if field in special_fields:
+                pass  # do something special
+            else:
+                trial = range(int(self._field_val_map[field], 0) + 1)
+
+            for _ in trial:
+                setattr(ip, field, _)
+                pckts.append(ip/TCP()/payload)
+        return pckts
+
+
+    def fuzz(self, fields=None, file=None, all=False):
+        payload = self._get_payload()
         if file:
-            pckts = self._get_payload("./" + file)
+            pckts = self._fuzz_from_file(file,payload)
+
         else:
-            pckts = self._rand_payload(test,size,min_len,max_len)
+            pckts = self._fuzz_by_fields(fields,payload)
 
-        valid = 0
-        tot = len(pckts)
-        print("sending packets to the server...")
-        filter = "ip host %s"%(self._dest)
-        sniff(filter=filter,count=tot)
+        print("preparing to send %d packets" %(len(pckts)))
+
         for pckt in pckts:
-            sendp(pckt)
-        print("finished sending")
-        print("%d packets are sent" % tot)
-        print("valid: %d" % valid)
-        print("invalid: %d" %(tot-valid))
+            sendp(Ether()/pckt, verbose=self.verbose)
 
+        print("packets sent successfully")
+        return
 
-fuzz = APPFuzzer("127.0.0.1","10.0.2.15",1338)
-fuzz.fuzz(test=3,min_len=2,max_len=4)
+if __name__ == "__main__":
+    fuzz=IPFuzzer("127.0.0.1","127.0.0.1")
+    fuzz.fuzz(file="ip.csv")
