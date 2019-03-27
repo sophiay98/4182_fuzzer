@@ -1,6 +1,8 @@
 
 from scapy.all import *
 import random
+import pandas as pd
+import numpy as np
 
 """FROM toschprod.wordpress.com
 
@@ -91,16 +93,18 @@ class TCPFuzzer(object):
         fields_dict = {col: list(fields[col]) for col in fields.columns}
 
         # read in csv file with the first line indicating fields' names
+        ip = IP(dst=self._dest, src=self._source)
         for index in range(len(fields_dict.values())):
-            ip = IP(dst=self._dest, src=self._source)
+            tcp = self.tcp
             for field in fields_dict.keys():
                 # set parameter if value is not null
                 if not np.isnan(fields_dict[field][index]):
-                    setattr(ip, field, fields_dict[field][index])
-                pckts.append(ip / TCP() / payload)
+                    setattr(tcp, field, fields_dict[field][index])
+                pckts.append(ip / tcp / payload)
 
             print("Cannot open file, running default fuzzing test instead...")
-            pckts = self._fuzz_by_fields()
+            for key in self.fields.keys():
+                self.fuzz(field_name=key)
 
         return pckts
 

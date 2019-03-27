@@ -36,12 +36,12 @@ before running client/server side programs to suppress RST flags.
 ###Usage
 ####IP Layer Fuzzer
 
-The ip layer fuzzer is able to run three kinds of tests:
+The ip layer fuzzer is able to run two kinds of tests:
 
 #####1.default tests
 to run this test:
 
-    
+    ipfuzzer = IPFuzzer(source=source, dest=dest)
     ipfuzzer.fuzz(field=f)
     
 
@@ -56,7 +56,7 @@ If f is not specified or f = None, all fields will be fuzzed.
 #####2.reading from a csv file
 to run this test:
 
-    
+    ipfuzzer = IPFuzzer(source=source, dest=dest)
     ipfuzzer.fuzz(file=file_name)
 
 file_name is the name of the file at the current directory.
@@ -91,12 +91,13 @@ Else the content of the file will be erased and recovered with the default value
 
 ####TCP Layer Fuzzer
 
-The ip layer fuzzer is able to run three kinds of tests:
+The tcp layer fuzzer is able to run three kinds of tests:
 
 #####1.default tests
 to run this test:
 
     
+    ipfuzzer = IPFuzzer(source=source, dest=dest)
     ipfuzzer.fuzz(field=f)
     
 
@@ -111,7 +112,7 @@ If f is not specified or f = None, all fields will be fuzzed.
 #####2.reading from a csv file
 to run this test:
 
-    
+    ipfuzzer = IPFuzzer(source=source, dest=dest)
     ipfuzzer.fuzz(file=file_name)
 
 file_name is the name of the file at the current directory.
