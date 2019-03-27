@@ -42,4 +42,6 @@ before running client/server side programs to suppress RST flags.
 
 4.issues may arise because of the firewall & RTS flags that gets automatically generated during establishing TCP connection with the server.
 
-5.
+5.the server only allows one connection at a time. There __cannot__ be multiple fuzzing running at the same time. Server will not respond while there is already another established connection.
+
+6.When opening a new server, __wait__ until the message ```listening on port ***``` appears. Until then the port is either closed or in use.

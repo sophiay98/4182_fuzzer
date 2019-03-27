@@ -108,7 +108,7 @@ class Client(object):
         self._ackThread = None
 
     def connect(self):
-        self.seq = random.randrange(0, (2 ** 32) - 1)
+        self.seq = random.randint(0, (2 ** 32) - 1)
         # SYN
         ip = IP(src=self.src, dst=self.dst)
         SYN = TCP(sport=self.sport, dport=self.dport, flags='S', seq=self.seq)
