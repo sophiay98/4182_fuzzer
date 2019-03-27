@@ -73,9 +73,6 @@ class IPFuzzer():
                     setattr(ip, field, fields_dict[field][index])
                 pckts.append(ip / TCP() / payload)
 
-            print("Cannot open file, running default fuzzing test instead...")
-            pckts = self._fuzz_by_fields()
-
         return pckts
 
     def _fuzz_by_fields(self, fields=None,payload="0x00"):

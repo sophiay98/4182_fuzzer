@@ -100,10 +100,6 @@ class TCPFuzzer(object):
                     setattr(tcp, field, fields_dict[field][index])
                 pckts.append(ip / tcp / payload)
 
-            print("Cannot open file, running default fuzzing test instead...")
-            for key in self.fields.keys():
-                self.fuzz(field_name=key)
-
         return pckts
 
     def fuzz(self, field_name='dport', all=False, num_trials=10,file=None):
