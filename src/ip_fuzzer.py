@@ -116,6 +116,6 @@ class IPFuzzer():
         print("packets sent successfully")
         return
 
-
-fuzz=IPFuzzer("127.0.0.1","127.0.0.1")
-fuzz.fuzz(["flags","ttl","version"])
+if __name__ == "__main__":
+    fuzz=IPFuzzer("127.0.0.1","127.0.0.1")
+    fuzz.fuzz(["flags","ttl","version"])

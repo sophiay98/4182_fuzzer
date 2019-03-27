@@ -10,28 +10,30 @@
 
 3.```sudo apt install python-pip```
 
-4.```sudo apt install scapy```
+4.```pip3 install scapy```
 
-5.```sudo apt install net-tools```
+5.```pip3 install pandas``
 
-6.run 
+6.```sudo apt install net-tools```
+
+7.run 
 ```sudo iptables -A OUTPUT -p tcp --tcp-flags RST RST -j DROP | sudo iptables -L```
 
 before running client/server side programs to suppress RST flags.
 
 ####using net-tools, find the ipv4 address of the server VM.
 
-6.run the server by ```sudo python3 run_server.py```
+8.run the server by ```sudo python3 run_server.py```
 
-7.run the client by ```sudo python3 *src* *dst* *sport* *dport*```
+9.run the client by ```sudo python3 *src* *dst* *sport* *dport*```
 
-8.if you type in the input after the prompt
+10.if you type in the input after the prompt
 
 ```input packet to send: ```, type in any text and check the server end.
 
-9.If your message appears with the appropriate valid/invalid message, success!
+11.If your message appears with the appropriate valid/invalid message, success!
 
-10.To quit, press Ctrl+V on the server side. input Q or q on the input prompt to exit on the client side.
+12.To quit, press Ctrl+V on the server side. input Q or q on the input prompt to exit on the client side.
 
 ####Server Comments
 1.server can receive up to 128 bytes of payload at a time. Any payload longer than that will be sliced after reaching 128 bytes.
