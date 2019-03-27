@@ -38,7 +38,7 @@ class TCPFuzzer(object):
             "urgptr": (0, 2 ** 16),
             "options": (0, 2 ** 100)
         }
-        self.tcp = TCP(sport=80, dport=8000)
+        self.tcp = TCP()
         self.ip = IP(src=self._source, dst=self._dest)
         self.sent = 0
         self.verbose = verbose
