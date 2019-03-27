@@ -49,8 +49,12 @@ class TCPFuzzer(object):
         tcp = self.tcp
         r = []
 
+        if all:
+            for f in self.fields.keys():
+                self.fuzz(f)
+
         if self.fields[field_name][1] - self.fields[field_name][0] > 10000:
-            trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(10)]
+            trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(num_trials)]
         else:
             trial = range(self.fields[field_name][0], self.fields[field_name][1])
 
