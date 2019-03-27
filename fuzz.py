@@ -27,14 +27,22 @@ if __name__ == "__main__":
                         help='run fuzzing for IP layer')
     parser.add_argument('-T', '-tcp', action='store_true', default=False,
                         help='run fuzzing for TCP layer')
-    parser.add_argument('-P', '-payload', action='store_true', default=False,
-                        help='run fuzzing for Payloads')
+    parser.add_argument('-A', '-app', action='store_true', default=False,
+                        help='run fuzzing for application layer')
     parser.add_argument('-tA', '-tall', action='store_true', default=False,
                         help='run fuzzing for all fields for TCP layer')
     parser.add_argument('-iA', '-iall', action='store_true', default=False,
                         help='run fuzzing for all fields for IP layer')
+    parser.add_argument('-N', '-num', action='store', default=100,
+                        help='number of tests to run')
     parser.add_argument('-v', '-verbose', action='store', default=0,
-                        help='run fuzzing for Payloads')
+                        help='set verbosity level')
+    parser.add_argument('-amin', action='store', dest='amin', default=1,
+                        help='minimum length for payload')
+    parser.add_argument('-amax', action='store', dest='amax', default=128,
+                        help='minimum length for payload')
+    parser.add_argument('-L', "-len", action='store', dest='len', default=128,
+                        help='length of the payload')
     tcp_fields = (
         "seq",
         "ack",
@@ -61,12 +69,20 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     print(args)
-    print(args.file_name)
+    print(args.Tfile_name)
+    print(args.Tfile_name)
+    print(args.T)
 
     try:
         v = int(args.v)
+        sp = int(args.sp)
+        dp = int(args.dp)
+        N = int(args.N)
+        amin = int(args.amin)
+        amax = int(args.amax)
+        len = int(args.len)
     except ValueError:
-        "Wrong verbosity value given"
+        "Wrong integer value given for verbosity, source port, or destination port."
         sys.exit()
 
     if args.I:
@@ -78,13 +94,18 @@ if __name__ == "__main__":
         elif args.Ifile_name:
             ipfuzz.fuzz(file=args.Ifile_name)
     if args.T:
-        tcpfuzz = TCPFuzzer(source=args.src,dest=args.dst,sport=args.sp,dport=args.dp,payload=args.payload_file, verbose=args.v)
-        if not args.tA:
+        tcpfuzz = TCPFuzzer(source=args.src,dest=args.dst,sport=sp,dport=dp,payload=args.payload_file, verbose=args.v)
+        if not args.tA and not args.Tfile_name:
             for field in args.tcp_field:
                 tcpfuzz.fuzz(field)
         elif args.tA:
             tcpfuzz.fuzz(all=True)
         elif args.Tfile_name:
+            print('asdf')
             tcpfuzz.fuzz(file=args.Tfile_name)
-    if args.P:
-        appfuzz = APPFuzzer(source=args.src,dest=args.dst,sport=args.sp,dport=args.dp, verbose=args.v)
+    if args.A:
+        appfuzz = APPFuzzer(source=args.src,dest=args.dst,sport=sp, dport=dp, verbose=args.v)
+        if args.Afile_name:
+            appfuzz.fuzz(test=args.N, size=len, file=args.Afile_name,min_len=amin, max_len=amax)
+        else:
+            appfuzz.fuzz(test=args.N, size=len, min_len=amin, max_len=amax)
