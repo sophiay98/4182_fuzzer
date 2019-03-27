@@ -78,7 +78,33 @@ class TCPFuzzer(object):
             print("created new file with payload: 0x00")
         return payload
 
-    def fuzz(self, field_name='dport', all=False, num_trials=10):
+    def _fuzz_from_file(self, file, payload):
+        pckts = []
+
+        # creates pandas dataframe from the file
+        try:
+            fields = pd.read_csv(file)
+        except FileNotFoundError:
+            print("unable to read the file: %s", file)
+            return pckts
+
+        fields_dict = {col: list(fields[col]) for col in fields.columns}
+
+        # read in csv file with the first line indicating fields' names
+        for index in range(len(fields_dict.values())):
+            ip = IP(dst=self._dest, src=self._source)
+            for field in fields_dict.keys():
+                # set parameter if value is not null
+                if not np.isnan(fields_dict[field][index]):
+                    setattr(ip, field, fields_dict[field][index])
+                pckts.append(ip / TCP() / payload)
+
+            print("Cannot open file, running default fuzzing test instead...")
+            pckts = self._fuzz_by_fields()
+
+        return pckts
+
+    def fuzz(self, field_name='dport', all=False, num_trials=10,file=None):
         tcp = self.tcp
         r = []
         self._payload = self._get_payload()
@@ -86,14 +112,17 @@ class TCPFuzzer(object):
             for f in self.fields.keys():
                 self.fuzz(f)
 
-        if self.fields[field_name][1] - self.fields[field_name][0] > 10000:
-            trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(num_trials)]
+        if file:
+            r = self._fuzz_from_file(file,self._payload)
         else:
-            trial = range(self.fields[field_name][0], self.fields[field_name][1])
+            if self.fields[field_name][1] - self.fields[field_name][0] > 10000:
+                trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(num_trials)]
+            else:
+                trial = range(self.fields[field_name][0], self.fields[field_name][1])
 
-        for i in trial:
-            setattr(tcp, field_name, i)
-            r.append(Ether() / self.ip / tcp / self._payload)
+            for i in trial:
+                setattr(tcp, field_name, i)
+                r.append(Ether() / self.ip / tcp / self._payload)
         for packet in r:
             sendp(packet, verbose=self.verbose)
             self.sent += 1

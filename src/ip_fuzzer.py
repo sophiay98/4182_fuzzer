@@ -3,13 +3,6 @@ from scapy.all import *
 import pandas as pd
 import numpy as np
 
-#TODO: use as a shell
-#TODO: end of file handling (eof)
-#TODO: mention the flaw in documentation
-
-#max payload size
-#regulate file type and input type
-
 
 class IPFuzzer():
 
@@ -17,9 +10,16 @@ class IPFuzzer():
         self._source = source
         self._dest = dest
         self._payload = payload
-        self._field_val_map = {"len":"0xffff","proto":"0xff","ihl":"0xf",
-                               "flags":"0b111","frag":"0b1111111111111",
-                               "ttl":"0xff","tos":"0xff","id":"0xffff","chksum":"0xffff","version":"0xf"}
+        self._field_val_map = {"len":"0xffff",
+                               "proto":"0xff",
+                               "ihl":"0xf",
+                               "flags":"0b111",
+                               "frag":"0b1111111111111",
+                               "ttl":"0xff",
+                               "tos":"0xff",
+                               "id":"0xffff",
+                               "chksum":"0xffff",
+                               "version":"0xf",}
         self._payload_addr = "./payload"
 
     def _get_payload(self):
@@ -29,7 +29,6 @@ class IPFuzzer():
             if len(payloads) < 1:
                 f.close()
                 raise IOError
-            # TODO : restriction on the length of the payload?
 
             # if value in the file is not hex string
             try:
