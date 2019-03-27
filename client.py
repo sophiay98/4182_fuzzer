@@ -67,7 +67,23 @@ class Client(object):
     def ackthread_start(self):
         self._ackThread = Thread(name='AT', target=self.sniff)
         self._ackThread.setDaemon(True)
+        self._recvThread = Thread(name='RC', target=self.recv)
+        self._recvThread.setDaemon(True)
         self._ackThread.start()
+        self._recvThread.start()
+
+    def recv(self):
+        def test(p):
+            if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
+                    and b"0xff" in bytes(p[TCP].payload):
+                print(p[TCP].payload)
+                self.invalid += 1
+            elif p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
+                    and b"0x00" in bytes(p[TCP].payload):
+                print(p[TCP].payload)
+                self.valid += 1
+
+        sniff(filter="tcp", prn=test, store=0)
 
     def sniff(self):
         s = L3RawSocket()
@@ -148,6 +164,11 @@ if __name__ =="__main__":
     myclient.connect()
     i = ""
     while i != "q" and i != "Q":
+        time.sleep(1)
         i = input("input packet to send: ")
+        if i.lower() == "q":
+            break
         myclient.send(i)
     myclient.close()
+    print(myclient.valid)
+    print(myclient.invalid)
