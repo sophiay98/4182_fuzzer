@@ -130,7 +130,7 @@ class Client(object):
     def send(self, payload):
         packet = self.ip / TCP(sport=self.sport, dport=self.dport, flags='PA', seq=self.seq, ack=self.ack) / payload
         # packet.show()
-        ack = sr1(packet, timeout=self.timeout)
+        ack = sr1(packet, timeout=self.timeout, verbose=0)
         self.seq += len(packet[Raw])
         self.total += 1
 

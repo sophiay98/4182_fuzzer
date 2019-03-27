@@ -21,7 +21,7 @@ import random
 
 
 class TCPFuzzer(object):
-    def __init__(self, source="127.0.0.1", dest="127.0.0.1", payload=None, fields=[]):
+    def __init__(self, source="127.0.0.1", dest="127.0.0.1", payload=None, fields=[], verbose=0):
         self._source = source
         self._dest = dest
         self._payload = "1"
@@ -41,6 +41,7 @@ class TCPFuzzer(object):
         self.tcp = TCP(sport=80, dport=8000)
         self.ip = IP(src=self._source, dst=self._dest)
         self.sent = 0
+        self.verbose = verbose
 
     def create_packets(self):
         pass
@@ -61,7 +62,7 @@ class TCPFuzzer(object):
             setattr(tcp, field_name, i)
             r.append(Ether() / self.ip / tcp / self._payload)
         for packet in r:
-            sendp(packet)
+            sendp(packet, verbose=self.verbose)
             self.sent += 1
 
     def send(self, packet_list):
