@@ -24,7 +24,7 @@ import numpy as np
 
 
 class TCPFuzzer(object):
-    def __init__(self, source="127.0.0.1", dest="127.0.0.1", sport=1337, dport=1338, payload=None, fields=[], verbose=0):
+    def __init__(self, source="127.0.0.1", dest="127.0.0.1", sport=1337, dport=1338, payload="./payload", verbose=0):
         self._source = source
         self._dest = dest
         self._payload = "1"
@@ -43,7 +43,7 @@ class TCPFuzzer(object):
         self.ip = IP(src=self._source, dst=self._dest)
         self.sent = 0
         self.verbose = verbose
-        self._payload_addr = "./payload"
+        self._payload_addr = payload
 
     def create_packets(self):
         pass
@@ -102,7 +102,7 @@ class TCPFuzzer(object):
 
         return pckts
 
-    def fuzz(self, field_name='dport', all=False, num_trials=10,file=None):
+    def fuzz(self, field_name='seq', all=False, num_trials=10,file=None):
         tcp = self.tcp
         r = []
         self._payload = self._get_payload()

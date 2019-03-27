@@ -6,7 +6,7 @@ import numpy as np
 
 class IPFuzzer():
 
-    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload=None, verbose=0):
+    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload="./payload", verbose=0):
         self._source = source
         self._dest = dest
         self._payload = payload
@@ -20,7 +20,7 @@ class IPFuzzer():
                                "id":"0xffff",
                                "chksum":"0xffff",
                                "version":"0xf",}
-        self._payload_addr = "./payload"
+        self._payload_addr = payload
         self.verbose = verbose
 
     def _get_payload(self):
@@ -97,7 +97,7 @@ class IPFuzzer():
         return pckts
 
 
-    def fuzz(self, fields=None, file=None):
+    def fuzz(self, fields=None, file=None, all=False):
         payload = self._get_payload()
         if file:
             pckts = self._fuzz_from_file(file,payload)

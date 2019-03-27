@@ -44,7 +44,7 @@ class APPFuzzer():
             pckts.append(bytes.fromhex(payload))
         return pckts
 
-    def fuzz(self,test=0, size=None,file=None,min_len=0,max_len=128):
+    def fuzz(self,test=0, size=None,file=None,min_len=1,max_len=128):
         if file:
             try:
                 pckts = self._get_payload("./" + str(file))
