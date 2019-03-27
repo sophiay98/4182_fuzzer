@@ -92,7 +92,7 @@ class TCPFuzzer(object):
 
         # read in csv file with the first line indicating fields' names
         ip = IP(dst=self._dest, src=self._source)
-        for index in range(len(fields_dict.values())):
+        for index in range(len(fields_dict.values())-1):
             tcp = self.tcp
             for field in fields_dict.keys():
                 # set parameter if value is not null
