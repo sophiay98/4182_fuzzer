@@ -42,15 +42,17 @@ class APPFuzzer():
             pckts.append(self._pckt / bytes.fromhex(payload))
         return pckts
 
-    def fuzz(self,test=0, size=None,file=None,min_len=2,max_len=128):
+    def fuzz(self,test=0, size=None,file=None,min_len=0,max_len=128):
         if file:
             pckts = self._get_payload("./" + file)
         else:
             pckts = self._rand_payload(test,size,min_len,max_len)
 
+        print("sending packets to the server...")
         for pckt in pckts:
             sendp(pckt)
+        print("finished sending")
 
 
 fuzz = APPFuzzer("127.0.0.1","127.0.0.1")
-fuzz.fuzz(test=3)
+fuzz.fuzz(test=3,min_len=2,max_len=4)
