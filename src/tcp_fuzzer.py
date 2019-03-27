@@ -22,13 +22,11 @@ import random
 
 
 class TCPFuzzer(object):
-    def __init__(self, source="127.0.0.1", dest="127.0.0.1", payload=None, fields=[], verbose=0):
+    def __init__(self, source="127.0.0.1", dest="127.0.0.1", sport=1337, dport=1338, payload=None, fields=[], verbose=0):
         self._source = source
         self._dest = dest
         self._payload = "1"
         self.fields = {
-            "sport": (0, 10000),
-            "dport": (0, 10000),
             "seq": (0, 2 ** 32),
             "ack": (0, 2 ** 32),
             "dataofs": (0, 16),
@@ -39,7 +37,7 @@ class TCPFuzzer(object):
             "urgptr": (0, 2 ** 16),
             "options": (0, 2 ** 100)
         }
-        self.tcp = TCP()
+        self.tcp = TCP(sport=sport,dport=dport)
         self.ip = IP(src=self._source, dst=self._dest)
         self.sent = 0
         self.verbose = verbose
