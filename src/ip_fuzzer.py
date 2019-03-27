@@ -6,7 +6,7 @@ import numpy as np
 
 class IPFuzzer():
 
-    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload=None):
+    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload=None, verbose=0):
         self._source = source
         self._dest = dest
         self._payload = payload
@@ -21,6 +21,7 @@ class IPFuzzer():
                                "chksum":"0xffff",
                                "version":"0xf",}
         self._payload_addr = "./payload"
+        self.verbose = verbose
 
     def _get_payload(self):
         try:
@@ -110,7 +111,7 @@ class IPFuzzer():
         print("preparing to send %d packets" %(len(pckts)))
 
         for pckt in pckts:
-            sendp(Ether()/pckt)
+            sendp(Ether()/pckt, verbose=self.verbose)
 
         print("packets sent successfully")
         return
