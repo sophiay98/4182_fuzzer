@@ -24,7 +24,7 @@ class TCPFuzzer(object):
     def __init__(self, source="127.0.0.1", dest="127.0.0.1", payload=None, fields=[]):
         self._source = source
         self._dest = dest
-        self._payload = payload
+        self._payload = "1"
         self.fields = {
             "sport": (0, 10000),
             "dport": (0, 10000),
@@ -39,16 +39,15 @@ class TCPFuzzer(object):
             "options": (0, 2 ** 100)
         }
         self.tcp = TCP(sport=80, dport=8000)
-        self.ip = IP(source=self._source, dest=self._dest)
+        self.ip = IP(src=self._source, dst=self._dest)
         self.sent = 0
 
     def create_packets(self):
         pass
 
-    def fuzz(self, field_name, all=False, num_trials=10):
+    def fuzz(self, field_name='dport', all=False, num_trials=10):
         tcp = self.tcp
         r = []
-
         if all:
             for f in self.fields.keys():
                 self.fuzz(f)
@@ -69,3 +68,6 @@ class TCPFuzzer(object):
         for packet in packet_list:
             self.sent += 1
             sendp(packet)
+
+t = TCPFuzzer()
+t.fuzz(all=True)
