@@ -43,13 +43,42 @@ class TCPFuzzer(object):
         self.ip = IP(src=self._source, dst=self._dest)
         self.sent = 0
         self.verbose = verbose
+        self._payload_addr = "./payload"
 
     def create_packets(self):
         pass
 
+    def _get_payload(self):
+        try:
+            f = open(self._payload_addr, "r")
+            paylaods = f.readlines()
+            if len(paylaods) < 1:
+                raise IOError
+            f.close()
+            # TODO : restriction on the length of the payload?
+
+            # if value in the file is not hex string
+            try:
+                int(paylaods[0], 16)
+                # only reads the first line of the file
+                print("using default payload: " + paylaods[0])
+                return paylaods[0]
+            except ValueError:
+                raise IOError
+
+        except IOError:
+            f = open(self._payload_addr, "w")
+            payload = "0x00"
+            f.write(payload)
+            f.close()
+            print("failure while reading value in the file")
+            print("created new file with payload: 0x00")
+            return payload
+
     def fuzz(self, field_name='dport', all=False, num_trials=10):
         tcp = self.tcp
         r = []
+        self._payload = self._get_payload()
         if all:
             for f in self.fields.keys():
                 self.fuzz(f)

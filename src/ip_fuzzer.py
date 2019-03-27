@@ -1,4 +1,5 @@
 from scapy.all import *
+import csv
 
 #TODO: use as a shell
 #TODO: end of file handling (eof)
@@ -15,10 +16,8 @@ class IPFuzzer():
         self._payload = payload
         self._field_val_map = {"len":"0xffff","proto":"0xff","ihl":"0xf",
                                "flags":"0b111","frag":"0b1111111111111",
-                               "ttl":"0xff"}
+                               "ttl":"0xff","tos":"0xff","id":"0xffff","checksum":"0xffff","version":"0xf"}
         self._payload_addr = "./payload"
-        #"source", "TOS", "id", "checksum"
-
 
     def _get_payload(self):
         try:
@@ -28,12 +27,23 @@ class IPFuzzer():
                 raise IOError
             f.close()
             #TODO : restriction on the length of the payload?
-            return paylaods[0]
+
+            #if value in the file is not hex string
+            try:
+                int(paylaods[0],16)
+                #only reads the first line of the file
+                print("using default payload: " + paylaods[0])
+                return paylaods[0]
+            except ValueError:
+                raise IOError
+
         except IOError:
             f = open(self._payload_addr, "w")
-            payload = "default payload"
+            payload = "0x00"
             f.write(payload)
             f.close()
+            print("failure while reading value in the file")
+            print("created new file with payload: 0x00")
             return payload
 
     def _fuzz_from_file(self,file):
@@ -57,10 +67,9 @@ class IPFuzzer():
         if not fields:
             fields = self._field_val_map.keys()
 
-        # need to modify for certain fields.
-
         for field in fields:
-            ip = IP(dst=self._dest)  # create default packet
+            print("fuzzing %s...", field)
+            ip = IP(dst=self._dest,src=self._source)  # create default packet
 
             if field in special_fields:
                 pass  # do something special
