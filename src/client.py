@@ -36,7 +36,7 @@ import atexit
 
 class Client(object):
 
-    def __init__(self, src='192.168.1.13', dst='192.168.1.11',sport='1337',dport='1338'):
+    def __init__(self, src='192.168.1.13', dst='192.168.1.11',sport='1337',dport='1338',verbose=0):
         self.src = src
         self.dst = dst
         self.ip = IP(src=self.src, dst=self.dst)
@@ -50,18 +50,19 @@ class Client(object):
         self.valid = 0
         self.invalid = 0
         self.total = 0
+        self.verbose = verbose
 
     def do_ack(self, p):
         self.ack = p[TCP].seq + len(p[Raw])
         ack = self.ip / TCP(sport=self.sport, dport=self.dport, flags='A', seq=self.seq, ack=self.ack)
-        send(ack)
+        send(ack, verbose=self.verbose)
 
     def ack_rclose(self):
         self.connected = False
 
         self.ack += 1
         fin_ack = self.ip / TCP(sport=self.sport, dport=self.dport, flags='FA', seq=self.seq, ack=self.ack)
-        ack = sr1(fin_ack, timeout=self.timeout)
+        ack = sr1(fin_ack, timeout=self.timeout, verbose=self.verbose)
         self.seq += 1
 
     def ackthread_start(self):
@@ -76,11 +77,9 @@ class Client(object):
         def test(p):
             if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
                     and b"0xff" in bytes(p[TCP].payload):
-                print(p[TCP].payload)
                 self.invalid += 1
             elif p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
                     and b"0x00" in bytes(p[TCP].payload):
-                print(p[TCP].payload)
                 self.valid += 1
 
         sniff(filter="tcp", prn=test, store=0)
@@ -91,11 +90,9 @@ class Client(object):
             p = s.recv(MTU)
             if p.haslayer(TCP) and p.haslayer(Raw) \
                     and p[TCP].dport == self.sport and b'0xff' in p.payload:
-                print(p.payload)
                 self.invalid += 1
             if p.haslayer(TCP) and p.haslayer(Raw) \
                     and p[TCP].dport == self.sport and b'0x00' in p.payload:
-                print(p.payload)
                 self.valid += 1
             if p.haslayer(TCP) and p.haslayer(Raw) \
                     and p[TCP].dport == self.sport:
@@ -108,12 +105,12 @@ class Client(object):
         self._ackThread = None
 
     def connect(self):
-        self.seq = random.randrange(0, (2 ** 32) - 1)
+        self.seq = random.randint(0, (2 ** 32) - 1)
         # SYN
         ip = IP(src=self.src, dst=self.dst)
         SYN = TCP(sport=self.sport, dport=self.dport, flags='S', seq=self.seq)
         self.seq += 1
-        SYNACK = sr1(ip / SYN, timeout=self.timeout)
+        SYNACK = sr1(ip / SYN, timeout=self.timeout, verbose=self.verbose)
         if not SYNACK:
             raise TimeoutError
         # SYNACK.show()
@@ -121,7 +118,7 @@ class Client(object):
         # ACK
         self.ack = SYNACK[TCP].seq + 1
         ACK = TCP(sport=self.sport, dport=self.dport, flags='A', seq=self.seq, ack=self.ack)
-        send(ip / ACK)
+        send(ip / ACK, verbose=self.verbose)
 
         self.connected = True
         self.ackthread_start()
@@ -130,7 +127,7 @@ class Client(object):
     def send(self, payload):
         packet = self.ip / TCP(sport=self.sport, dport=self.dport, flags='PA', seq=self.seq, ack=self.ack) / payload
         # packet.show()
-        ack = sr1(packet, timeout=self.timeout, verbose=0)
+        ack = sr1(packet, timeout=self.timeout, verbose=self.verbose)
         self.seq += len(packet[Raw])
         self.total += 1
 
@@ -138,13 +135,13 @@ class Client(object):
         self.connected = False
 
         fin = self.ip/TCP(sport=self.sport, dport=self.dport, flags='FA', seq=self.seq, ack=self.ack)
-        fin_ack = sr1(fin, timeout=self.timeout)
+        fin_ack = sr1(fin, timeout=self.timeout, verbose=self.verbose)
         self.seq += 1
 
         if fin_ack:
             self.ack = fin_ack[TCP].seq + 1
         ack = self.ip/TCP(sport=self.sport, dport=self.dport, flags='A', seq=self.seq,  ack=self.ack)
-        send(ack)
+        send(ack, verbose=self.verbose)
 
 
 if __name__ =="__main__":

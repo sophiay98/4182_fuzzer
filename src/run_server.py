@@ -3,6 +3,7 @@ import socket
 from scapy.all import *
 import atexit
 
+# find local host internal address
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
 ip = s.getsockname()[0]
@@ -12,18 +13,13 @@ port = 1338
 valid = 0
 invalid = 0
 
-
+# print valid and invalid # of packets before exit
 def print_v_i():
-    #minus 1 for disregarding connection closing packet
-
-    print(valid)
-    print(invalid-1)
-
-
+    print("# of valid packets: " + str(valid))
+    print("# of valid packets: " + str(invalid))
 atexit.register(print_v_i)
 
 pattern = "asd"
-sock = L3RawSocket()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -54,7 +50,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     print(data)
                 else:
                     continue
-                if pattern in data:
+                if pattern in data[:len(pattern)]:
                     print("valid!")
                     valid += 1
                     conn.sendall(b"0x000x000x000x00")

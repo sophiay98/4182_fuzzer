@@ -1,5 +1,8 @@
+
 from scapy.all import *
 import random
+import pandas as pd
+import numpy as np
 
 """FROM toschprod.wordpress.com
 
@@ -21,13 +24,11 @@ import random
 
 
 class TCPFuzzer(object):
-    def __init__(self, source="127.0.0.1", dest="127.0.0.1", payload=None, fields=[], verbose=0):
+    def __init__(self, source="127.0.0.1", dest="127.0.0.1", sport=1337, dport=1338, payload="./payload", verbose=0):
         self._source = source
         self._dest = dest
         self._payload = "1"
         self.fields = {
-            "sport": (0, 10000),
-            "dport": (0, 10000),
             "seq": (0, 2 ** 32),
             "ack": (0, 2 ** 32),
             "dataofs": (0, 16),
@@ -38,29 +39,91 @@ class TCPFuzzer(object):
             "urgptr": (0, 2 ** 16),
             "options": (0, 2 ** 100)
         }
-        self.tcp = TCP()
+        self.tcp = TCP(sport=sport,dport=dport)
         self.ip = IP(src=self._source, dst=self._dest)
         self.sent = 0
         self.verbose = verbose
+        self._payload_addr = payload
 
     def create_packets(self):
         pass
 
-    def fuzz(self, field_name='dport', all=False, num_trials=10):
+    def _get_payload(self):
+        try:
+            f = open(self._payload_addr, "r")
+            payloads = f.readlines()
+            if len(payloads) < 1:
+                f.close()
+                raise IOError
+            # TODO : restriction on the length of the payload?
+
+            # if value in the file is not hex string
+            try:
+                payload = bytes.fromhex(payloads[0]) # only reads the first line of the file
+                print("using payload: 0x" + payloads[0])
+            except ValueError:
+                print("%s cannot be parsed as hex" % (payloads[0]))
+                print("changing the file to include default payload 0x00...")
+                f = open(self._payload_addr, "w")
+                payload = "00"
+                f.write(payload)
+                f.close()
+                payload = bytes.fromhex("00")
+        except IOError:
+            f = open(self._payload_addr, "w")
+            payload = bytes.fromhex("00")
+            f.write("00")
+            f.close()
+            print("failure while reading value in the file")
+            print("created new file with payload: 0x00")
+        return payload
+
+    def _fuzz_from_file(self, file, payload):
+        pckts = []
+
+        # creates pandas dataframe from the file
+        try:
+            fields = pd.read_csv(file)
+        except FileNotFoundError:
+            print("unable to read the file: %s", file)
+            return pckts
+
+        fields_dict = {col: list(fields[col]) for col in fields.columns}
+
+        # read in csv file with the first line indicating fields' names
+        ip = IP(dst=self._dest, src=self._source)
+        for index in range(len(list(fields_dict.values())[0])):
+            tcp = self.tcp
+            for field in fields_dict.keys():
+                # set parameter if value is not null
+                try:
+                    val = int(fields_dict[field][index],0)
+                    setattr(tcp, field, val)
+                except:
+                    pass
+                pckts.append(ip / tcp / payload)
+
+        return pckts
+
+    def fuzz(self, field_name='seq', all=False, num_trials=10,file=None):
         tcp = self.tcp
         r = []
+        self._payload = self._get_payload()
         if all:
             for f in self.fields.keys():
                 self.fuzz(f)
 
-        if self.fields[field_name][1] - self.fields[field_name][0] > 10000:
-            trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(num_trials)]
+        if file:
+            r = self._fuzz_from_file(file,self._payload)
         else:
-            trial = range(self.fields[field_name][0], self.fields[field_name][1])
+            if self.fields[field_name][1] - self.fields[field_name][0] > 10000:
+                trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(num_trials)]
+            else:
+                trial = range(self.fields[field_name][0], self.fields[field_name][1])
 
-        for i in trial:
-            setattr(tcp, field_name, i)
-            r.append(Ether() / self.ip / tcp / self._payload)
+            for i in trial:
+                setattr(tcp, field_name, i)
+                r.append(Ether() / self.ip / tcp / self._payload)
         for packet in r:
             sendp(packet, verbose=self.verbose)
             self.sent += 1
@@ -68,7 +131,7 @@ class TCPFuzzer(object):
     def send(self, packet_list):
         for packet in packet_list:
             self.sent += 1
-            sendp(packet)
+            sendp(packet, verbose=self.verbose)
 
 if __name__ == "__main__":
     t = TCPFuzzer()
