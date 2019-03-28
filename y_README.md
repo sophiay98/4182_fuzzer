@@ -58,7 +58,7 @@ before running client/server side programs to suppress RST flags.
 
 3.You can pass in -A to test all fields. (while not reading in from a file)
 
-4. below is --help for the fuzz.py
+4.below is --help for the fuzz.py
 
 ```
 usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
@@ -93,7 +93,7 @@ optional arguments:
   -N N, -num N          number of tests to run
   -v V, -verbose V      set verbosity level
   -amin AMIN            minimum length for payload
-  -amax AMAX            minimum length for payload
+  -amax AMAX            maximum length for payload
   -L LEN, -len LEN      length of the payload
   -tseq                 Add seq to TCP fields for fuzzing
   -tack                 Add ack to TCP fields for fuzzing
@@ -113,3 +113,6 @@ optional arguments:
 
 
 ```
+note that the above list might be slightly different from what is actually printed when calling --help.
+
+5.

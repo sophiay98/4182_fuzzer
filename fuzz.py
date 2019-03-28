@@ -40,7 +40,7 @@ if __name__ == "__main__":
     parser.add_argument('-amin', action='store', dest='amin', default=1,
                         help='minimum length for payload')
     parser.add_argument('-amax', action='store', dest='amax', default=128,
-                        help='minimum length for payload')
+                        help='maximum length for payload')
     parser.add_argument('-L', "-len", action='store', dest='len', default=128,
                         help='length of the payload')
     tcp_fields = (
@@ -82,8 +82,14 @@ if __name__ == "__main__":
         amax = int(args.amax)
         len = int(args.len)
     except ValueError:
-        "Wrong integer value given for verbosity, source port, or destination port."
+        "Wrong integer value given for fields expected to have integer values."
         sys.exit()
+
+    int_values = (v,sp,dp,N,amin,amax,len)
+    for i in int_values:
+        if i < 0:
+            print("All possible integer optional arguments has to be positive.")
+            sys.exit()
 
     if args.I:
         ipfuzz = IPFuzzer(source=args.src,dest=args.dst, payload=args.payload_file, verbose=args.v)
