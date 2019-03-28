@@ -72,7 +72,8 @@ usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
                [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
                [-L LEN] [-tseq] [-tack] [-tdataofs] [-treserved] [-tflags]
                [-twindow] [-tchksum] [-turgptr] [-toptions] [-ilen] [-iproto]
-               [-iihl] [-iflags] [-ifrag] [-ittl]
+               [-iihl] [-iflags] [-ifrag] [-ittl] [-itos] [-iid] [-ichksum]
+               [-iversion]
 
 Fuzzing IP, Transport(TCP), Payloads with scapy.
 
@@ -116,7 +117,10 @@ optional arguments:
   -iflags               Add flags to IP fields for fuzzing
   -ifrag                Add frag to IP fields for fuzzing
   -ittl                 Add ttl to IP fields for fuzzing
-
+  -itos                 Add tos to IP fields for fuzzing
+  -iid                  Add id to IP fields for fuzzing
+  -ichksum              Add chksum to IP fields for fuzzing
+  -iversion             Add version to IP fields for fuzzing
 
 ```
 note that the above list might be slightly different from what is actually printed when calling --help.
