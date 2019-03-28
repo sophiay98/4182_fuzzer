@@ -63,7 +63,11 @@ class TCPFuzzer(object):
             except ValueError:
                 print("%s cannot be parsed as hex" % (payloads[0]))
                 print("interpreting it as a normal string")
-                payload = payloads[0]
+                f = open(self._payload_addr, "w")
+                payload = "00"
+                f.write(payload)
+                f.close()
+                payload = bytes.fromhex("00")
         except IOError:
             f = open(self._payload_addr, "w")
             payload = bytes.fromhex("00")
