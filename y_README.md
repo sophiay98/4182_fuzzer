@@ -54,9 +54,11 @@ before running client/server side programs to suppress RST flags.
 ####optional arguments comments
 1.The optional arguments are not exclusive. You can run IP layer fuzzing with TCP layer fuzzing with one call, by passing -I and -T through optional arguments.
 
-2.However, there are precedence: if there is a filename argument, the fuzzer will only test on the file, ignoring the randomly generating tests.
+2.You can pass in -A to test all fields. (while not reading in from a file)
 
-3.You can pass in -A to test all fields. (while not reading in from a file)
+3.However, there are precedence
+2. if there is an 'all' argument, it will test all fields randomly, disregarding filename argument.
+2. if there is a filename argument, the fuzzer will only test on the file, ignoring the field values for randomly generating tests.
 
 4.sample execution: ```sudo python3 fuzz.py -src 192.168.1.13 -dst 192.168.1.11 -sport 1337 -dport 1338 -A -v 0 -N 10```
 
