@@ -40,7 +40,7 @@ Valid values for the first row are:
 
 To skip fuzzing a field, simply leave the cell corresponding to that field empty.
 
-The value of each cell should be a hex string within the range of the valid values for that field.
+The value of each cell should be a hex string in the format of 0x00 within the range of the valid values for that field.
 
 For example, a valid CSV file shoud look like:
 
@@ -49,7 +49,7 @@ For example, a valid CSV file shoud look like:
     0x11,0xf00f,0xf
     0x01,,0xf
 
-each row will produce one packet to be sent.
+Each row will produce one packet to be sent.
 
 #####3 Payload
 A default payload is included for each packet sent.
@@ -70,14 +70,16 @@ to run this test:
     sudo python3 fuzz.py -T (-t[FIELD])*
     
 
-f is a list of fields name.
+FIELD indicates the field to fuzz.
+it will then generate a packet for every possible value for that field.
 
 valid values for items in FIELD are:
 
 
     sport, dport, seq, ack, dataofs, reserved, flags, window, chksum, urgptr,options
 
-If f is not specified or f = None, all fields will be fuzzed.
+If FIELD is not specified or seq field will be fuzzed.
+
 #####2.reading from a csv file
 to run this test:
 
@@ -96,17 +98,17 @@ Valid values for the first row are:
 
 To skip fuzzing a field, simply leave the cell corresponding to that field empty.
 
-The value of each cell should be a hex string within the range of the valid values for that field.
+The value of each cell should be a hex string within the range of the valid values for that field in the format of 0x00.
 
-For example, a valid CSV file shoud look like:
+For example, a valid CSV file should look like:
 
 
     seq,flags,chksum
-    01,00,02
-    02,01,01
+    0x01,0x00,0x02
+    0x02,0x01,0x01
 
 
-each row will produce one packet to be sent.
+Each row will produce one packet to be sent.
 
 #####3 Payload
 A default payload is included for each packet sent.
