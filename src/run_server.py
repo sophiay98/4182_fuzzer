@@ -13,10 +13,10 @@ port = 1338
 valid = 0
 invalid = 0
 
-# print valid and invalid # of packets before exit
+# print valid and invalid # of packets before exit, -1 in invalid to disregard connection closing packet
 def print_v_i():
     print("# of valid packets: " + str(valid))
-    print("# of valid packets: " + str(invalid))
+    print("# of valid packets: " + str(invalid-1))
 atexit.register(print_v_i)
 
 pattern = "asd"
