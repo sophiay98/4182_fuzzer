@@ -55,15 +55,16 @@ class TCPFuzzer(object):
             if len(payloads) < 1:
                 f.close()
                 raise IOError
-
-            # if value in the file is not hex string
+            #try parsing the first line as hex
             try:
                 payload = bytes.fromhex(payloads[0]) # only reads the first line of the file
                 print("using payload: 0x" + payloads[0])
             except ValueError:
+                #if cannot be parsed as hex, raise exception
                 print("%s cannot be parsed as hex" % (payloads[0]))
                 raise FieldAttributeException
         except IOError:
+            # file cannot be read. Create with 0x00
             f = open(self._payload_addr, "w")
             payload = bytes.fromhex("00")
             f.write("00")
@@ -106,6 +107,7 @@ class TCPFuzzer(object):
         try:
             self._payload = self._get_payload()
         except FieldAttributeException:
+            # file content is not hex. Terminate the program
             print("terminating the program...")
             return
 
