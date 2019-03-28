@@ -31,6 +31,8 @@ from scapy.all import *
 import time
 import atexit
 
+lock = Lock()
+lock2 = Lock()
 
 # VARIABLES
 
@@ -84,12 +86,18 @@ class Client(object):
     def recv(self):
         # receiving valid/invalid flags from server
         def test(p):
+            if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport:
+                print(p.payload)
             if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport \
                     and b"0xff" in bytes(p[TCP].payload):
+                lock.acquire()
                 self.invalid += 1
+                lock.release()
             elif p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport \
                     and b"0x00" in bytes(p[TCP].payload):
+                lock2.acquire()
                 self.valid += 1
+                lock2.release()
 
         sniff(filter="tcp", prn=test, store=0)
 
@@ -117,6 +125,7 @@ class Client(object):
         SYN = TCP(sport=self.sport, dport=self.dport, flags='S', seq=self.seq)
         self.seq += 1
         SYNACK = sr1(ip / SYN, timeout=self.timeout, verbose=self.verbose)
+        time.sleep(1)
         if not SYNACK:
             print("connection timed out. couldn't connect to the server")
             raise TimeoutError
@@ -126,15 +135,17 @@ class Client(object):
         self.ack = SYNACK[TCP].seq + 1
         ACK = TCP(sport=self.sport, dport=self.dport, flags='A', seq=self.seq, ack=self.ack)
         send(ip / ACK, verbose=self.verbose)
+        time.sleep(1)
 
         self.connected = True
         self.ackthread_start()
         print("Connected to " + str(self.dst))
+        time.sleep(1)
 
     def send(self, payload):
         # send packets with payload as inputs
         packet = self.ip / TCP(sport=self.sport, dport=self.dport, flags='PA', seq=self.seq, ack=self.ack) / payload
-        # packet.show()
+        print("sending:" + str(packet.payload))
         ack = sr1(packet, timeout=self.timeout, verbose=self.verbose)
         self.seq += len(packet[Raw])
         self.total += 1

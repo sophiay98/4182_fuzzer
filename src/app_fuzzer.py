@@ -71,6 +71,7 @@ class APPFuzzer():
         for pckt in pckts:
             try:
                 self.client.send(pckt)
+                time.sleep(2)
             except OSError as err:
                 print(err)
                 print()
@@ -82,8 +83,7 @@ class APPFuzzer():
 
         print("total count: " + str(self.client.total))
         print("valid count: " + str(self.client.valid))
-        # minus 4 for disregarding establishing/closing connection
-        print("invalid count: " + str(max(0,self.client.invalid-4)))
+        print("invalid count: " + str(max(0,self.client.invalid)))
 
 
 if __name__ == "__main__":
