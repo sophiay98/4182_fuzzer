@@ -71,8 +71,11 @@ class IPFuzzer():
             ip = IP(dst=self._dest,src=self._source)
             for field in fields_dict.keys():
                 #set parameter if value is not null
-                if not np.isnan(fields_dict[field][index]):
-                    setattr(ip, field, fields_dict[field][index])
+                try:
+                    val = int(fields_dict[field][index],0)
+                    setattr(ip, field, val)
+                except:
+                    pass
                 pckts.append(ip / TCP(sport=self._sport, dport=self._dport) / payload)
 
         return pckts

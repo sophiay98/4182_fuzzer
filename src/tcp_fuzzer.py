@@ -96,8 +96,11 @@ class TCPFuzzer(object):
             tcp = self.tcp
             for field in fields_dict.keys():
                 # set parameter if value is not null
-                if not np.isnan(fields_dict[field][index]):
-                    setattr(tcp, field, fields_dict[field][index])
+                try:
+                    val = int(fields_dict[field][index],0)
+                    setattr(tcp, field, val)
+                except:
+                    pass
                 pckts.append(ip / tcp / payload)
 
         return pckts
