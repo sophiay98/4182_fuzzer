@@ -12,16 +12,19 @@ class APPFuzzer():
         try:
             f = open(addr, "r")
             payloads = f.readlines()
+
             if len(payloads) < 1:
                 print("there's nothing in the file")
                 print("terminating...")
                 return pckts
-            #if value in the file is not hex string
+
+            #if contains payloads
             for payload in payloads:
                 try:
                     p = bytes.fromhex(payload)  # only reads the first line of the file
                     print("using payload: 0x" + payload)
                     pckts.append(self._pckt/p)
+                # if cannot be interpreted as hex string
                 except ValueError:
                     print("%s cannot be parsed as hex" % (payload))
                     print("continue parsing the remaining of the file %s ..."%(addr))
@@ -33,6 +36,7 @@ class APPFuzzer():
     def _rand_payload(self,test=0,size=None,min_len=2,max_len=128):
         pckts = []
         if size:
+            #2-digit hex string is 1 byte thus *2
             size=size*2
         for _ in range(test):
             length=size
