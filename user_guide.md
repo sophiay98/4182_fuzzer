@@ -124,7 +124,7 @@ Else the content of the file will be erased and recovered with the default value
 The application layer fuzzer is able to run three kinds of tests:
 
 #####1.default tests with varied payload length
-NOTE: You have to have the run_server.py running and accepting connections through a port for this to be able to work.
+NOTE: You have to have the run_server.py running and accepting connections through a port for this to be able to work. Otherwise, it will throw timeout error.
 
 to run this test:
 
