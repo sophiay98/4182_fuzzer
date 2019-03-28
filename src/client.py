@@ -144,6 +144,7 @@ class Client(object):
         send(ack, verbose=self.verbose)
 
 
+# self-testing/doodling/manual input testing
 if __name__ =="__main__":
     arglist = sys.argv
 

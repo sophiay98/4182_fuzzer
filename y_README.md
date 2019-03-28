@@ -53,6 +53,8 @@ before running client/server side programs to suppress RST flags.
 8.The tests were only done within an internal address environment (VM to VM). Other circumstances (ex. Connecting to server through the external IP address) would work with some modifications, but it is not guaranteed.
 
 9.The application layer testing can be very slow. (~2 seconds per input)
+
+10.set the default accepting payload on src/pattern.
 ####optional arguments comments
 1.The optional arguments are not exclusive. You can run IP layer fuzzing with TCP layer fuzzing with one call, by passing -I and -T through optional arguments.
 

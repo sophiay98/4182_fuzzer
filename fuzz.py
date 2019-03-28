@@ -6,6 +6,8 @@ from src.app_fuzzer import APPFuzzer
 import argparse
 
 if __name__ == "__main__":
+
+    # add argument parsing criteria
     parser = argparse.ArgumentParser(description='Fuzzing IP, Transport(TCP), Payloads with scapy.')
     parser.add_argument('-S', '-src', action='store', dest='src', default='127.0.0.1',
                         help='select source ip address')
@@ -43,6 +45,8 @@ if __name__ == "__main__":
                         help='maximum length for payload')
     parser.add_argument('-L', "-len", action='store', dest='len', default=128,
                         help='length of the payload')
+
+    #add tcp fields options
     tcp_fields = (
         "seq",
         "ack",
@@ -59,6 +63,7 @@ if __name__ == "__main__":
                             dest='tcp_field', const=f, default=[],
                             help='Add ' + f + ' to TCP fields for fuzzing')
 
+    #add ip fields options
     ip_fields = ("len", "proto", "ihl",
                  "flags", "frag",
                  "ttl", "tos",
@@ -71,11 +76,9 @@ if __name__ == "__main__":
                             help='Add ' + f + ' to IP fields for fuzzing')
 
     args = parser.parse_args()
-    print(args)
-    print(args.Tfile_name)
-    print(args.Tfile_name)
-    print(args.T)
+    # print(args)
 
+    # convert integer strings to int
     try:
         v = int(args.v)
         sp = int(args.sp)
@@ -88,12 +91,14 @@ if __name__ == "__main__":
         "Wrong integer value given for fields expected to have integer values."
         sys.exit()
 
+    # value asserting
     int_values = (v, sp, dp, N, amin, amax, len)
     for i in int_values:
         if i < 0:
             print("All possible integer optional arguments has to be positive.")
             sys.exit()
 
+    # run fuzzing
     if args.I:
         ipfuzz = IPFuzzer(source=args.src, dest=args.dst, payload=args.payload_file, verbose=args.v)
         if not args.iA and not args.Ifile_name:
@@ -111,7 +116,6 @@ if __name__ == "__main__":
         elif args.tA:
             tcpfuzz.fuzz(all=True)
         elif args.Tfile_name:
-            print('asdf')
             tcpfuzz.fuzz(file=args.Tfile_name)
     if args.A:
         appfuzz = APPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, verbose=v)
