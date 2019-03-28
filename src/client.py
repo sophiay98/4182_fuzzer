@@ -77,11 +77,9 @@ class Client(object):
         def test(p):
             if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
                     and b"0xff" in bytes(p[TCP].payload):
-                print(p[TCP].payload)
                 self.invalid += 1
             elif p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
                     and b"0x00" in bytes(p[TCP].payload):
-                print(p[TCP].payload)
                 self.valid += 1
 
         sniff(filter="tcp", prn=test, store=0)

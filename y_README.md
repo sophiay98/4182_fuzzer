@@ -50,3 +50,66 @@ before running client/server side programs to suppress RST flags.
 
 7.The tests were only done within an internal address environment (VM to VM). Other circumstances (ex. Connecting to server through the external IP address) would work with some modifications, but it is not guaranteed.
 
+8.The application layer testing can be very slow. (~2 seconds per input)
+####optional arguments comments
+1.The optional arguments are not exclusive. You can run IP layer fuzzing with TCP layer fuzzing with one call, by passing -I and -T through optional arguments.
+
+2.However, there are precedence: if there is a filename argument, the fuzzer will only test on the file, ignoring the randomly generating tests.
+
+3.You can pass in -A to test all fields. (while not reading in from a file)
+
+4. below is --help for the fuzz.py
+
+```
+usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
+               [-TF TFILE_NAME] [-AF AFILE_NAME] [-PF PAYLOAD_FILE] [-I] [-T]
+               [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
+               [-L LEN] [-tseq] [-tack] [-tdataofs] [-treserved] [-tflags]
+               [-twindow] [-tchksum] [-turgptr] [-toptions] [-ilen] [-iproto]
+               [-iihl] [-iflags] [-ifrag] [-ittl]
+
+Fuzzing IP, Transport(TCP), Payloads with scapy.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -S SRC, -src SRC      select source ip address
+  -D DST, -dst DST      select destination ip address
+  -SP SP, -sport SP     select source port
+  -DP DP, -dport DP     select destination port
+  -IF IFILE_NAME, -ifile IFILE_NAME
+                        select file to read the fuzzing data for ip layer
+  -TF TFILE_NAME, -tfile TFILE_NAME
+                        select file to read the fuzzing data for tcp layer
+  -AF AFILE_NAME, -afile AFILE_NAME
+                        select file to read the fuzzing data for application
+                        layer
+  -PF PAYLOAD_FILE, -payloadfile PAYLOAD_FILE
+                        select file to read the default payload data
+  -I, -ip               run fuzzing for IP layer
+  -T, -tcp              run fuzzing for TCP layer
+  -A, -app              run fuzzing for application layer
+  -tA, -tall            run fuzzing for all fields for TCP layer
+  -iA, -iall            run fuzzing for all fields for IP layer
+  -N N, -num N          number of tests to run
+  -v V, -verbose V      set verbosity level
+  -amin AMIN            minimum length for payload
+  -amax AMAX            minimum length for payload
+  -L LEN, -len LEN      length of the payload
+  -tseq                 Add seq to TCP fields for fuzzing
+  -tack                 Add ack to TCP fields for fuzzing
+  -tdataofs             Add dataofs to TCP fields for fuzzing
+  -treserved            Add reserved to TCP fields for fuzzing
+  -tflags               Add flags to TCP fields for fuzzing
+  -twindow              Add window to TCP fields for fuzzing
+  -tchksum              Add chksum to TCP fields for fuzzing
+  -turgptr              Add urgptr to TCP fields for fuzzing
+  -toptions             Add options to TCP fields for fuzzing
+  -ilen                 Add len to IP fields for fuzzing
+  -iproto               Add proto to IP fields for fuzzing
+  -iihl                 Add ihl to IP fields for fuzzing
+  -iflags               Add flags to IP fields for fuzzing
+  -ifrag                Add frag to IP fields for fuzzing
+  -ittl                 Add ttl to IP fields for fuzzing
+
+
+```
