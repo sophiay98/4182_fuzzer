@@ -60,9 +60,9 @@ class APPFuzzer():
             self.client.send(pckt)
         print("finished sending")
 
-        # minus 4 for disregarding establishing/closing connection
-        print("total count: " + str(self.client.total-4))
+        print("total count: " + str(self.client.total))
         print("valid count: " + str(self.client.valid))
+        # minus 4 for disregarding establishing/closing connection
         print("invalid count: " + str(self.client.invalid-4))
 
 
