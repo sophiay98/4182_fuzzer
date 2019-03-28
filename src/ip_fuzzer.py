@@ -65,7 +65,7 @@ class IPFuzzer():
         fields_dict = {col: list(fields[col]) for col in fields.columns}
 
         #read in csv file with the first line indicating fields' names
-        for index in range(len(fields_dict.values())-1):
+        for index in range(len(list(fields_dict.values())[0])):
             ip = IP(dst=self._dest,src=self._source)
             for field in fields_dict.keys():
                 #set parameter if value is not null
