@@ -8,7 +8,7 @@
 
 2.```sudo apt install python3```
 
-3.```sudo apt install python-pip```
+3.```sudo apt install python3-pip```
 
 4.```pip3 install scapy```
 

@@ -51,13 +51,14 @@ For example, a valid CSV file shoud look like:
 
 Each row will produce one packet to be sent.
 
+ip.csv is an example file.
+
 #####3 Payload
 A default payload is included for each packet sent.
 
-The default payload is read in from ```./payload``` file.
+The default payload is read in from ```./default_payload``` file. Only the first line will count.
 
-The user can edit the file with values desired. However, the value should be a hex string(with no prefix such as 0x) and be on the first line of the file.
-Else the content of the file will be erased and recovered with the default value 00.
+The user can edit the file with values as desired. However, some special characters such as ```\r``` might break the packets.
 
 The length of the payload should not exceed the upper limit set by Scapy. We recommend it to be length then 3000 bytes.
 
@@ -115,10 +116,9 @@ Each row will produce one packet to be sent.
 #####3 Payload
 A default payload is included for each packet sent.
 
-The default payload is read in from ```./payload``` file.
+The default payload is read in from ```./payload``` file. Only the first line will count.
 
-The user can edit the file with values desired. However, the value should be a hex string(with no prefix such as 0x) and be on the first line of the file.
-Else the content of the file will be erased and recovered with the default value 00.
+The user can edit the file with values desired. However, some special characters such as ```\r``` might break the packets.
 
 The length of the payload should not exceed the upper limit set by Scapy. We recommend it to be length then 3000 bytes.
 
