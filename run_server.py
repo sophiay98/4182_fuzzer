@@ -14,8 +14,10 @@ invalid = 0
 
 
 def print_v_i():
+    #minus 1 for disregarding connection closing packet
+
     print(valid)
-    print(invalid)
+    print(invalid-1)
 
 
 atexit.register(print_v_i)
