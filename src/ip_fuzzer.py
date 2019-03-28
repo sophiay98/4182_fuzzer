@@ -39,9 +39,7 @@ class IPFuzzer():
                 print("using payload: 0x" + payloads[0])
             except ValueError:
                 print("%s cannot be parsed as hex" % (payloads[0]))
-                print("interpreting it as a normal string")
-                payload = payloads[0]
-
+                raise FieldAttributeException
         except IOError:
             f = open(self._payload_addr, "w")
             payload = bytes.fromhex("00")
@@ -98,7 +96,10 @@ class IPFuzzer():
 
 
     def fuzz(self, fields=None, file=None, all=False):
-        payload = self._get_payload()
+        try:
+            payload = self._get_payload()
+        except FieldAttributeException:
+            return
 
         if file:
             #reads in from file

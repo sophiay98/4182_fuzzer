@@ -24,13 +24,11 @@ class APPFuzzer():
                 try:
                     p = bytes.fromhex(payload)  # only reads the first line of the file
                     print("using payload: 0x" + payload)
-                    pckts.append(self._pckt/p)
+                    pckts.append(p)
                 # if cannot be interpreted as hex string
                 except ValueError:
                     print("\"%s\" cannot be parsed as hex" % (payload))
-                    print("interpreting it as a normal string")
-                    pckts.append(self._pckt / payload)
-
+                    print("continue parsing the remaining of the file %s ..."%(addr))
         except IOError:
             print("cannot open file: %s" %(addr))
             print("terminating...")
@@ -53,7 +51,7 @@ class APPFuzzer():
             payload = ''.join(
                 random.choice(list(chr(_) for _ in range(ord('a'), ord('f') + 1)) + list(str(_)
                                         for _ in range(10))) for _ in range(length))
-            pckts.append(self._pckt/bytes.fromhex(payload))
+            pckts.append(bytes.fromhex(payload))
         return pckts
 
     def fuzz(self,test=0, size=None,file=None,min_len=1,max_len=128):
