@@ -88,9 +88,9 @@ class TCPFuzzer(object):
             print("unable to read the file: %s", file)
             return pckts
 
+        # fields_dict={"field1":[pckt1,pckt2],"field2":[pckt1,pckt2]}
         fields_dict = {col: list(fields[col]) for col in fields.columns}
 
-        # read in csv file with the first line indicating fields' names
         ip = IP(dst=self._dest, src=self._source)
         for index in range(len(list(fields_dict.values())[0])):
             tcp = self.tcp
@@ -100,6 +100,7 @@ class TCPFuzzer(object):
                     val = int(fields_dict[field][index],0)
                     setattr(tcp, field, val)
                 except:
+                    # if cannot be interpreted as hex, skip
                     pass
                 pckts.append(ip / tcp / payload)
 

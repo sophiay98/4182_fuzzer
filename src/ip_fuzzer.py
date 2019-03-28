@@ -64,9 +64,9 @@ class IPFuzzer():
             print("unable to read the file: %s", file)
             return pckts
 
+        #fields_dict={"field1":[pckt1,pckt2],"field2":[pckt1,pckt2]}
         fields_dict = {col: list(fields[col]) for col in fields.columns}
 
-        #read in csv file with the first line indicating fields' names
         for index in range(len(list(fields_dict.values())[0])):
             ip = IP(dst=self._dest,src=self._source)
             for field in fields_dict.keys():
@@ -75,6 +75,7 @@ class IPFuzzer():
                     val = int(fields_dict[field][index],0)
                     setattr(ip, field, val)
                 except:
+                    #if cannot be interpreted as hex, skip
                     pass
                 pckts.append(ip / TCP(sport=self._sport, dport=self._dport) / payload)
 

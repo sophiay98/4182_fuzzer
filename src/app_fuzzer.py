@@ -38,10 +38,14 @@ class APPFuzzer():
         if size:
             #2-digit hex string is 1 byte thus *2
             size=size*2
+
         for _ in range(test):
+            #if fixed size
             length=size
+            #if varied size.
             if not size:
-                length = random.randint(min_len, max_len)*2
+                length = random.randint(min_len, max_len)*2 #2-digit hex string is 1 byte thus *2
+            #generate each digit by randomly choosing from 0–9 and a-f
             payload = ''.join(
                 random.choice(list(chr(_) for _ in range(ord('a'), ord('f') + 1)) + list(str(_)
                                         for _ in range(10))) for _ in range(length))
