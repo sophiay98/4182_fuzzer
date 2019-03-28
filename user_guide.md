@@ -123,38 +123,45 @@ Else the content of the file will be erased and recovered with the default value
 
 The ip layer fuzzer is able to run three kinds of tests:
 
-#####1.default tests
+#####1.default tests with varied payload length
 to run this test:
 
     
-    sudo python3 fuzz.py -A [-amin MIN] [-amax MAX]
+    sudo python3 fuzz.py -A [-amin MIN] [-amax MAX] [-N N]
     
 it send a given number of packets with payload of varied lengths within a given range
 
+-N N field sets the number of tests to run. It has to be a positive integer.
+-amin MIN sets the minimum length in byte of the payload. It has to be a positive integer as well.
+-amax MAX sets the maximum length in byte of the payload. It has to be greater than or equal to min_len and has to be less then the payload limit indicated by Scapy ( e.g. we recommend it to be less than 3000)
+
+#####2.default test with fixed payload length
 to run this test:
 
     
-    appfuzzer = APPFuzzer(source=src, dest=dest, sport=sport, dport=dport)
-    appfuzzer.fuzz(test=num, min_len=min,max_len=max)
+    sudo python3 fuzz.py -A [-L LEN] [-N N]
     
+it send a given number of packets with payload of length.
 
-test field sets the number of tests to run. It has to be a positive integer.
-min_len sets the minimum length in byte of the payload. It has to be a positive integer as well.
-max_len sets the maximum length in byte of the payload. It has to be greater than or equal to min_len and has to be less then the payload limit indicated by Scapy ( e.g. we recommend it to be less than 3000)
- 
+-N N field sets the number of tests to run. It has to be a positive integer.
 
-#####2.reading from a file
+-L LEN sets the  length in byte of the payload. It has to be a positive integer and less then the payload limit indicated by Scapy ( e.g. we recommend it to be less than 3000)
+
+#####3.reading from a file
 to run this test:
 
     
-    sudo python3 fuzz.py -A -afile file_name [-amin MIN] [-amax MAX]
+    sudo python3 fuzz.py -A -afile file_name [-N N]
 
 file_name is the name of the file at the current directory.
+
+-N N field sets the number of tests to run. It has to be a positive integer.
+
+-L LEN sets the  length in byte of the payload. It has to be a positive integer and less then the payload limit indicated by Scapy ( e.g. we recommend it to be less than 3000)
 
 Each row of the file contains one payload that is no greater than the largest payload Scapy can take.
 
 The payload should be hex strings with no prefixes such as 0x or x/
-
 
 
 ####Server Comments
