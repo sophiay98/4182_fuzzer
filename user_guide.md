@@ -129,21 +129,32 @@ to run this test:
     
     sudo python3 fuzz.py -A [-amin MIN] [-amax MAX]
     
-where MIN is minimum packet length and MAX is maximum packet length.
+it send a given number of packets with payload of varied lengths within a given range
 
-(note that the server doesn't accept payload of length 0)
+to run this test:
+
+    
+    appfuzzer = APPFuzzer(source=src, dest=dest, sport=sport, dport=dport)
+    appfuzzer.fuzz(test=num, min_len=min,max_len=max)
+    
+
+test field sets the number of tests to run. It has to be a positive integer.
+min_len sets the minimum length in byte of the payload. It has to be a positive integer as well.
+max_len sets the maximum length in byte of the payload. It has to be greater than or equal to min_len and has to be less then the payload limit indicated by Scapy ( e.g. we recommend it to be less than 3000)
+ 
 
 #####2.reading from a file
 to run this test:
 
     
-    sudo python3 fuzz.py -A -afile app.txt [-amin MIN] [-amax MAX]
+    sudo python3 fuzz.py -A -afile file_name [-amin MIN] [-amax MAX]
 
 file_name is the name of the file at the current directory.
 
-First row the file indicate the name of the field corresponding to the values in each column.
+Each row of the file contains one payload that is no greater than the largest payload Scapy can take.
 
-each row will be a payload in a packet that will be sent to the server.
+The payload should be hex strings with no prefixes such as 0x or x/
+
 
 
 ####Server Comments
