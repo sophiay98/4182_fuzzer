@@ -16,7 +16,7 @@ invalid = 0
 # print valid and invalid # of packets before exit, -1 in invalid to disregard connection closing packet
 def print_v_i():
     print("# of valid packets: " + str(valid))
-    print("# of valid packets: " + str(min(0,invalid-1)))
+    print("# of invalid packets: " + str(max(0,invalid-1)))
 atexit.register(print_v_i)
 
 try:
