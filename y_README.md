@@ -58,6 +58,8 @@ before running client/server side programs to suppress RST flags.
 
 3.You can pass in -A to test all fields. (while not reading in from a file)
 
+4.sample execution: ```sudo python3 fuzz.py -src 192.168.1.13 -dst 192.168.1.11 -sport 1337 -dport 1338 -A -v 0 -N 10```
+
 4.below is --help for the fuzz.py
 
 ```
@@ -114,5 +116,3 @@ optional arguments:
 
 ```
 note that the above list might be slightly different from what is actually printed when calling --help.
-
-5.
