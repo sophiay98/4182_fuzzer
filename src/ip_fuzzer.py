@@ -6,10 +6,12 @@ import numpy as np
 
 class IPFuzzer():
 
-    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload="./payload", verbose=0):
+    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload="./payload", verbose=0,sport=1337, dport=1338,):
         self._source = source
         self._dest = dest
         self._payload = payload
+        self._dport = dport
+        self._sport = sport
         self._field_val_map = {"len":"0xffff",
                                "proto":"0xff",
                                "ihl":"0xf",
@@ -71,7 +73,7 @@ class IPFuzzer():
                 #set parameter if value is not null
                 if not np.isnan(fields_dict[field][index]):
                     setattr(ip, field, fields_dict[field][index])
-                pckts.append(ip / TCP() / payload)
+                pckts.append(ip / TCP(sport=self._sport, dport=self._dport) / payload)
 
         return pckts
 
@@ -93,7 +95,7 @@ class IPFuzzer():
 
             for _ in trial:
                 setattr(ip, field, _)
-                pckts.append(ip/TCP()/payload)
+                pckts.append(ip/TCP(sport=self._sport, dport=self._dport)/payload)
         return pckts
 
 
