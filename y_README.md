@@ -46,19 +46,31 @@ before running client/server side programs to suppress RST flags.
 
 5.the server only allows one connection at a time. There __cannot__ be multiple fuzzing running at the same time. Server will not respond while there is already another established connection.
 
-6.When opening a new server, __wait__ until the message ```listening on port ***``` appears. Until then the port is either closed or in use.
+6.the server can handle only one connection per execution. restart the server to try new fuzzing for the application layer.
 
-7.The tests were only done within an internal address environment (VM to VM). Other circumstances (ex. Connecting to server through the external IP address) would work with some modifications, but it is not guaranteed.
+7.When opening a new server, __wait__ until the message ```listening on port ***``` appears. Until then the port is either closed or in use.
 
-8.The application layer testing can be very slow. (~2 seconds per input)
+8.The tests were only done within an internal address environment (VM to VM). Other circumstances (ex. Connecting to server through the external IP address) would work with some modifications, but it is not guaranteed.
+
+9.The application layer testing can be very slow. (~2 seconds per input)
+
+10.set the default accepting payload on src/pattern.
 ####optional arguments comments
 1.The optional arguments are not exclusive. You can run IP layer fuzzing with TCP layer fuzzing with one call, by passing -I and -T through optional arguments.
 
-2.However, there are precedence: if there is a filename argument, the fuzzer will only test on the file, ignoring the randomly generating tests.
+2.You can pass in -A to test all fields. (while not reading in from a file)
 
-3.You can pass in -A to test all fields. (while not reading in from a file)
+3.However, there are precedence
+2. if there is an 'all' argument, it will test all fields randomly, disregarding filename argument.
+2. if there is a filename argument, the fuzzer will only test on the file, ignoring the field values for randomly generating tests.
 
-4. below is --help for the fuzz.py
+4.The arguments can be shortened within an argument
+
+ex)```sudo python3 fuzz.py -TA```
+
+5.sample execution: ```sudo python3 fuzz.py -src 192.168.1.13 -dst 192.168.1.11 -sport 1337 -dport 1338 -A -v 0 -N 10```
+
+6.below is --help for the fuzz.py
 
 ```
 usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
@@ -66,7 +78,8 @@ usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
                [-A] [-tA] [-iA] [-N N] [-v V] [-amin AMIN] [-amax AMAX]
                [-L LEN] [-tseq] [-tack] [-tdataofs] [-treserved] [-tflags]
                [-twindow] [-tchksum] [-turgptr] [-toptions] [-ilen] [-iproto]
-               [-iihl] [-iflags] [-ifrag] [-ittl]
+               [-iihl] [-iflags] [-ifrag] [-ittl] [-itos] [-iid] [-ichksum]
+               [-iversion]
 
 Fuzzing IP, Transport(TCP), Payloads with scapy.
 
@@ -93,7 +106,7 @@ optional arguments:
   -N N, -num N          number of tests to run
   -v V, -verbose V      set verbosity level
   -amin AMIN            minimum length for payload
-  -amax AMAX            minimum length for payload
+  -amax AMAX            maximum length for payload
   -L LEN, -len LEN      length of the payload
   -tseq                 Add seq to TCP fields for fuzzing
   -tack                 Add ack to TCP fields for fuzzing
@@ -110,6 +123,10 @@ optional arguments:
   -iflags               Add flags to IP fields for fuzzing
   -ifrag                Add frag to IP fields for fuzzing
   -ittl                 Add ttl to IP fields for fuzzing
-
+  -itos                 Add tos to IP fields for fuzzing
+  -iid                  Add id to IP fields for fuzzing
+  -ichksum              Add chksum to IP fields for fuzzing
+  -iversion             Add version to IP fields for fuzzing
 
 ```
+note that the above list might be slightly different from what is actually printed when calling --help.
