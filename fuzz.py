@@ -99,27 +99,30 @@ if __name__ == "__main__":
             sys.exit()
 
     # run fuzzing
-    if args.I:
-        ipfuzz = IPFuzzer(source=args.src, dest=args.dst, payload=args.payload_file, verbose=args.v)
-        if not args.iA and not args.Ifile_name:
-            ipfuzz.fuzz(fields=args.ip_field)
-        elif args.iA:
-            ipfuzz.fuzz(all=True)
-        elif args.Ifile_name:
-            ipfuzz.fuzz(file=args.Ifile_name)
-    if args.T:
-        tcpfuzz = TCPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, payload=args.payload_file,
-                            verbose=args.v)
-        if not args.tA and not args.Tfile_name:
-            for field in args.tcp_field:
-                tcpfuzz.fuzz(field)
-        elif args.tA:
-            tcpfuzz.fuzz(all=True,num_trials=N)
-        elif args.Tfile_name:
-            tcpfuzz.fuzz(file=args.Tfile_name)
-    if args.A:
-        appfuzz = APPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, verbose=v)
-        if args.Afile_name:
-            appfuzz.fuzz(test=N, size=len, file=args.Afile_name, min_len=amin, max_len=amax)
-        else:
-            appfuzz.fuzz(test=N, size=len, min_len=amin, max_len=amax)
+    try:
+        if args.I:
+            ipfuzz = IPFuzzer(source=args.src, dest=args.dst, payload=args.payload_file, verbose=args.v)
+            if not args.iA and not args.Ifile_name:
+                ipfuzz.fuzz(fields=args.ip_field)
+            elif args.iA:
+                ipfuzz.fuzz(all=True)
+            elif args.Ifile_name:
+                ipfuzz.fuzz(file=args.Ifile_name)
+        if args.T:
+            tcpfuzz = TCPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, payload=args.payload_file,
+                                verbose=args.v)
+            if not args.tA and not args.Tfile_name:
+                for field in args.tcp_field:
+                    tcpfuzz.fuzz(field)
+            elif args.tA:
+                tcpfuzz.fuzz(all=True,num_trials=N)
+            elif args.Tfile_name:
+                tcpfuzz.fuzz(file=args.Tfile_name)
+        if args.A:
+            appfuzz = APPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, verbose=v)
+            if args.Afile_name:
+                appfuzz.fuzz(test=N, size=len, file=args.Afile_name, min_len=amin, max_len=amax)
+            else:
+                appfuzz.fuzz(test=N, size=len, min_len=amin, max_len=amax)
+    except Exception as e:
+        print(e)

@@ -3,7 +3,7 @@ import socket
 from scapy.all import *
 import atexit
 
-# find local host internal address
+# find local host internal address, set port to 1338
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
 ip = s.getsockname()[0]
@@ -19,8 +19,12 @@ def print_v_i():
     print("# of valid packets: " + str(min(0,invalid-1)))
 atexit.register(print_v_i)
 
-pattern = open("pattern.txt.txt", 'r')
-pattern = pattern.read()
+try:
+    pattern = open("pattern.txt", 'r')
+    pattern = pattern.read()
+except IOError:
+    print("no pattern.txt found. falling back to \x00.")
+    pattern = "\x00"
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

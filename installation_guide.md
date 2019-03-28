@@ -33,3 +33,10 @@ before running client/server side programs to suppress RST flags.
 11.If your message appears with the appropriate valid/invalid message, success!
 
 12.To quit, press Ctrl+V on the server side. input Q or q on the input prompt to exit on the client side.
+
+
+#### Comments
+
+1.the fuzzer uses scapy 2.4.2
+
+2.Ubuntu 18.04
