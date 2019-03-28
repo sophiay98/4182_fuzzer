@@ -106,6 +106,6 @@ if __name__ == "__main__":
     if args.A:
         appfuzz = APPFuzzer(source=args.src,dest=args.dst,sport=sp, dport=dp, verbose=v)
         if args.Afile_name:
-            appfuzz.fuzz(test=args.N, size=len, file=args.Afile_name,min_len=amin, max_len=amax)
+            appfuzz.fuzz(test=N, size=len, file=args.Afile_name,min_len=amin, max_len=amax)
         else:
-            appfuzz.fuzz(test=args.N, size=len, min_len=amin, max_len=amax)
+            appfuzz.fuzz(test=N, size=len, min_len=amin, max_len=amax)
