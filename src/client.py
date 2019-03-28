@@ -118,6 +118,7 @@ class Client(object):
         self.seq += 1
         SYNACK = sr1(ip / SYN, timeout=self.timeout, verbose=self.verbose)
         if not SYNACK:
+            print("connection timed out. couldn't connect to the server")
             raise TimeoutError
         # SYNACK.show()
 
