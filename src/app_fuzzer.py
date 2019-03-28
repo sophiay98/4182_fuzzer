@@ -63,7 +63,7 @@ class APPFuzzer():
         print("total count: " + str(self.client.total))
         print("valid count: " + str(self.client.valid))
         # minus 4 for disregarding establishing/closing connection
-        print("invalid count: " + str(self.client.invalid-4))
+        print("invalid count: " + str(max(0,self.client.invalid-4)))
 
 
 if __name__ == "__main__":

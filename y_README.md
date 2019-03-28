@@ -46,11 +46,13 @@ before running client/server side programs to suppress RST flags.
 
 5.the server only allows one connection at a time. There __cannot__ be multiple fuzzing running at the same time. Server will not respond while there is already another established connection.
 
-6.When opening a new server, __wait__ until the message ```listening on port ***``` appears. Until then the port is either closed or in use.
+6.the server can handle only one connection per execution. restart the server to try new fuzzing for the application layer.
 
-7.The tests were only done within an internal address environment (VM to VM). Other circumstances (ex. Connecting to server through the external IP address) would work with some modifications, but it is not guaranteed.
+7.When opening a new server, __wait__ until the message ```listening on port ***``` appears. Until then the port is either closed or in use.
 
-8.The application layer testing can be very slow. (~2 seconds per input)
+8.The tests were only done within an internal address environment (VM to VM). Other circumstances (ex. Connecting to server through the external IP address) would work with some modifications, but it is not guaranteed.
+
+9.The application layer testing can be very slow. (~2 seconds per input)
 ####optional arguments comments
 1.The optional arguments are not exclusive. You can run IP layer fuzzing with TCP layer fuzzing with one call, by passing -I and -T through optional arguments.
 
