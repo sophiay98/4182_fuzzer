@@ -36,7 +36,11 @@ import atexit
 
 class Client(object):
 
-    def __init__(self, src='192.168.1.13', dst='192.168.1.11',sport='1337',dport='1338',verbose=0):
+    def __init__(self, src='192.168.1.13', dst='192.168.1.11', sport='1337', dport='1338', verbose=0):
+
+        # initialize necessary values
+        self._recvThread = Thread(name='RC', target=self.recv)
+        self._ackThread = Thread(name='AT', target=self.sniff)
         self.src = src
         self.dst = dst
         self.ip = IP(src=self.src, dst=self.dst)
@@ -53,11 +57,15 @@ class Client(object):
         self.verbose = verbose
 
     def do_ack(self, p):
+
+        # acknowledge data sent from server
         self.ack = p[TCP].seq + len(p[Raw])
         ack = self.ip / TCP(sport=self.sport, dport=self.dport, flags='A', seq=self.seq, ack=self.ack)
         send(ack, verbose=self.verbose)
 
     def ack_rclose(self):
+
+        # acknowledge server fin message
         self.connected = False
 
         self.ack += 1
@@ -66,34 +74,30 @@ class Client(object):
         self.seq += 1
 
     def ackthread_start(self):
-        self._ackThread = Thread(name='AT', target=self.sniff)
+
+        # start acknowledge thread and sniff thread (for receiving valid/invalid flags)
         self._ackThread.setDaemon(True)
-        self._recvThread = Thread(name='RC', target=self.recv)
         self._recvThread.setDaemon(True)
         self._ackThread.start()
         self._recvThread.start()
 
     def recv(self):
+        # receiving valid/invalid flags from server
         def test(p):
-            if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
+            if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport \
                     and b"0xff" in bytes(p[TCP].payload):
                 self.invalid += 1
-            elif p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport\
+            elif p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport \
                     and b"0x00" in bytes(p[TCP].payload):
                 self.valid += 1
 
         sniff(filter="tcp", prn=test, store=0)
 
     def sniff(self):
+        # acknowledge sending to server
         s = L3RawSocket()
         while self.connected:
             p = s.recv(MTU)
-            if p.haslayer(TCP) and p.haslayer(Raw) \
-                    and p[TCP].dport == self.sport and b'0xff' in p.payload:
-                self.invalid += 1
-            if p.haslayer(TCP) and p.haslayer(Raw) \
-                    and p[TCP].dport == self.sport and b'0x00' in p.payload:
-                self.valid += 1
             if p.haslayer(TCP) and p.haslayer(Raw) \
                     and p[TCP].dport == self.sport:
                 self.do_ack(p)
@@ -105,6 +109,8 @@ class Client(object):
         self._ackThread = None
 
     def connect(self):
+
+        # connect to server using attributes
         self.seq = random.randint(0, (2 ** 32) - 1)
         # SYN
         ip = IP(src=self.src, dst=self.dst)
@@ -125,6 +131,7 @@ class Client(object):
         print("Connected to " + str(self.dst))
 
     def send(self, payload):
+        # send packets with payload as inputs
         packet = self.ip / TCP(sport=self.sport, dport=self.dport, flags='PA', seq=self.seq, ack=self.ack) / payload
         # packet.show()
         ack = sr1(packet, timeout=self.timeout, verbose=self.verbose)
@@ -132,20 +139,21 @@ class Client(object):
         self.total += 1
 
     def close(self):
+        # close connection
         self.connected = False
 
-        fin = self.ip/TCP(sport=self.sport, dport=self.dport, flags='FA', seq=self.seq, ack=self.ack)
+        fin = self.ip / TCP(sport=self.sport, dport=self.dport, flags='FA', seq=self.seq, ack=self.ack)
         fin_ack = sr1(fin, timeout=self.timeout, verbose=self.verbose)
         self.seq += 1
 
         if fin_ack:
             self.ack = fin_ack[TCP].seq + 1
-        ack = self.ip/TCP(sport=self.sport, dport=self.dport, flags='A', seq=self.seq,  ack=self.ack)
+        ack = self.ip / TCP(sport=self.sport, dport=self.dport, flags='A', seq=self.seq, ack=self.ack)
         send(ack, verbose=self.verbose)
 
 
 # self-testing/doodling/manual input testing
-if __name__ =="__main__":
+if __name__ == "__main__":
     arglist = sys.argv
 
     try:
