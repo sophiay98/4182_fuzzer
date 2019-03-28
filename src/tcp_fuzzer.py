@@ -115,11 +115,15 @@ class TCPFuzzer(object):
                 self.fuzz(f)
 
         if file:
+            # read in from file
             r = self._fuzz_from_file(file,self._payload)
         else:
+            #generate values for fields
             if self.fields[field_name][1] - self.fields[field_name][0] > 10000:
+                #infeasible to fuzz for all values. Randomly generating num_trial packets
                 trial = [random.randint(self.fields[field_name][0], self.fields[field_name][1]) for x in range(num_trials)]
             else:
+                #fuzz all possible values
                 trial = range(self.fields[field_name][0], self.fields[field_name][1])
 
             for i in trial:

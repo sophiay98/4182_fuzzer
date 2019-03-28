@@ -7,6 +7,7 @@ class APPFuzzer():
         self.client = Client(source,dest,sport,dport,verbose=verbose)
         self.verbose = verbose
 
+    #read in payloads
     def _get_payload(self,addr):
         pckts = []
         try:
@@ -33,6 +34,7 @@ class APPFuzzer():
             print("terminating...")
         return pckts
 
+    #generate payloads
     def _rand_payload(self,test=0,size=None,min_len=2,max_len=128):
         pckts = []
         if size:
@@ -54,12 +56,14 @@ class APPFuzzer():
 
     def fuzz(self,test=0, size=None,file=None,min_len=1,max_len=128):
         if file:
+            #try reading in from file
             try:
                 pckts = self._get_payload("./" + str(file))
             except IOError:
                 print("file not found")
                 pckts = self._rand_payload(test, size, min_len, max_len)
         else:
+            #generate random payloads with given length parameters
             pckts = self._rand_payload(test,size,min_len,max_len)
 
         print("sending packets to the server...")

@@ -85,6 +85,7 @@ class IPFuzzer():
         pckts = []
 
         if not fields:
+            #if fields not specified, fuzz all.
             fields = self._field_val_map.keys()
 
         for field in fields:
@@ -103,8 +104,10 @@ class IPFuzzer():
         payload = self._get_payload()
 
         if file:
+            #reads in from file
             pckts = self._fuzz_from_file(file,payload)
         else:
+            #generates values for fields
             pckts = self._fuzz_by_fields(fields,payload)
 
         print("preparing to send %d packets" %(len(pckts)))
