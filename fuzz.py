@@ -71,10 +71,10 @@ if __name__ == "__main__":
                             help='Add ' + f + ' to IP fields for fuzzing')
 
     args = parser.parse_args()
-    # print(args)
-    # print(args.Tfile_name)
-    # print(args.Tfile_name)
-    # print(args.T)
+    print(args)
+    print(args.Tfile_name)
+    print(args.Tfile_name)
+    print(args.T)
 
     try:
         v = int(args.v)

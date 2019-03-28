@@ -62,9 +62,13 @@ before running client/server side programs to suppress RST flags.
 2. if there is an 'all' argument, it will test all fields randomly, disregarding filename argument.
 2. if there is a filename argument, the fuzzer will only test on the file, ignoring the field values for randomly generating tests.
 
-4.sample execution: ```sudo python3 fuzz.py -src 192.168.1.13 -dst 192.168.1.11 -sport 1337 -dport 1338 -A -v 0 -N 10```
+4.The arguments can be shortened within an argument
 
-4.below is --help for the fuzz.py
+ex)```sudo python3 fuzz.py -TA```
+
+5.sample execution: ```sudo python3 fuzz.py -src 192.168.1.13 -dst 192.168.1.11 -sport 1337 -dport 1338 -A -v 0 -N 10```
+
+6.below is --help for the fuzz.py
 
 ```
 usage: fuzz.py [-h] [-S SRC] [-D DST] [-SP SP] [-DP DP] [-IF IFILE_NAME]
