@@ -28,7 +28,9 @@ class APPFuzzer():
                 # if cannot be interpreted as hex string
                 except ValueError:
                     print("\"%s\" cannot be parsed as hex" % (payload))
-                    print("continue parsing the remaining of the file %s ..."%(addr))
+                    print("interpreting it as a normal string")
+                    pckts.append(self._pckt / payload)
+
         except IOError:
             print("cannot open file: %s" %(addr))
             print("terminating...")

@@ -55,7 +55,6 @@ class TCPFuzzer(object):
             if len(payloads) < 1:
                 f.close()
                 raise IOError
-            # TODO : restriction on the length of the payload?
 
             # if value in the file is not hex string
             try:
@@ -63,12 +62,8 @@ class TCPFuzzer(object):
                 print("using payload: 0x" + payloads[0])
             except ValueError:
                 print("%s cannot be parsed as hex" % (payloads[0]))
-                print("changing the file to include default payload 0x00...")
-                f = open(self._payload_addr, "w")
-                payload = "00"
-                f.write(payload)
-                f.close()
-                payload = bytes.fromhex("00")
+                print("interpreting it as a normal string")
+                payload = payloads[0]
         except IOError:
             f = open(self._payload_addr, "w")
             payload = bytes.fromhex("00")

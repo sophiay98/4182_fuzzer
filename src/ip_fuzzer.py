@@ -39,12 +39,9 @@ class IPFuzzer():
                 print("using payload: 0x" + payloads[0])
             except ValueError:
                 print("%s cannot be parsed as hex" % (payloads[0]))
-                print("changing the file to include default payload 0x00...")
-                f = open(self._payload_addr, "w")
-                payload = "00"
-                f.write(payload)
-                f.close()
-                payload = bytes.fromhex("00")
+                print("interpreting it as a normal string")
+                payload = payloads[0]
+
         except IOError:
             f = open(self._payload_addr, "w")
             payload = bytes.fromhex("00")
