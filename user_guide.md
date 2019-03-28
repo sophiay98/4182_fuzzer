@@ -189,6 +189,8 @@ The payload should be hex strings with no prefixes such as 0x or x/. It should n
 10.set the default accepting payload on src/pattern.
 
 11.the server reads pattern.txt to obtain accepting payload pattern. If pattern.txt is not found, it will fall back to \x00 for accepting pattern.
+
+12.the client tends to be unreliable with packet counts.
 ####optional arguments comments
 1.The optional arguments are not exclusive. You can run IP layer fuzzing with TCP layer fuzzing with one call, by passing -I and -T through optional arguments.
 

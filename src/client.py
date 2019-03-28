@@ -86,8 +86,6 @@ class Client(object):
     def recv(self):
         # receiving valid/invalid flags from server
         def test(p):
-            if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport:
-                print(p.payload)
             if p[TCP] and p[TCP].payload and p[TCP].dport == self.sport and p[TCP].sport == self.dport \
                     and b"0xff" in bytes(p[TCP].payload):
                 lock.acquire()
@@ -145,7 +143,6 @@ class Client(object):
     def send(self, payload):
         # send packets with payload as inputs
         packet = self.ip / TCP(sport=self.sport, dport=self.dport, flags='PA', seq=self.seq, ack=self.ack) / payload
-        print("sending:" + str(packet.payload))
         ack = sr1(packet, timeout=self.timeout, verbose=self.verbose)
         self.seq += len(packet[Raw])
         self.total += 1
