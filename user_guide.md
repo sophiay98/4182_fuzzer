@@ -59,6 +59,8 @@ The default payload is read in from ```./payload``` file.
 The user can edit the file with values desired. However, the value should be a hex string(with no prefix such as 0x) and be on the first line of the file.
 Else the content of the file will be erased and recovered with the default value 00.
 
+The length of the payload should not exceed the upper limit set by Scapy. We recommend it to be length then 3000 bytes.
+
 ####TCP Layer Fuzzer
 
 The tcp layer fuzzer is able to run three kinds of tests:
@@ -118,6 +120,7 @@ The default payload is read in from ```./payload``` file.
 The user can edit the file with values desired. However, the value should be a hex string(with no prefix such as 0x) and be on the first line of the file.
 Else the content of the file will be erased and recovered with the default value 00.
 
+The length of the payload should not exceed the upper limit set by Scapy. We recommend it to be length then 3000 bytes.
 
 ####Application Layer Fuzzer
 
