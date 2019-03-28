@@ -6,7 +6,7 @@ import numpy as np
 
 class IPFuzzer():
 
-    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload="./payload", verbose=0,sport=1337, dport=1338,):
+    def __init__(self,source="127.0.0.1", dest="127.0.0.1", payload="./payload", verbose=0,sport=1337, dport=1338):
         self._source = source
         self._dest = dest
         self._payload = payload

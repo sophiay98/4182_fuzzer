@@ -56,7 +56,7 @@ If f is not specified or f = None, all fields will be fuzzed.
 #####2.reading from a csv file
 to run this test:
 
-    ipfuzzer = IPFuzzer(source=source, dest=dest)
+    ipfuzzer = IPFuzzer(source=source, dest=dest,sport=sport, dport=dport)
     ipfuzzer.fuzz(file=file_name)
 
 file_name is the name of the file at the current directory.
@@ -74,7 +74,7 @@ To skip fuzzing a field, simply leave the cell corresponding to that field empty
 
 The value of each cell should be a hex string within the range of the valid values for that field.
 
-For example, a valid CSV file shoud look like:
+For example, a valid CSV file should look like:
 
 
     ttl,len,version
@@ -93,27 +93,35 @@ Else the content of the file will be erased and recovered with the default value
 
 The tcp layer fuzzer is able to run three kinds of tests:
 
-#####1.default tests
+#####1.default tests on specific fields
 to run this test:
 
     
-    ipfuzzer = IPFuzzer(source=source, dest=dest)
+    tcpfuzzer = TCPFuzzer(source=source, dest=dest,sport=sport, dport=dport)
     ipfuzzer.fuzz(field=f)
     
 
-f is a list of fields name.
+f is a field name.
+it will then generate a packet for every possible value for that field.
 
-valid values for items in f are:
+valid values for f are:
 
 
-    sport, dport, seq, ack, dataofs, reserved, flags, window, chksum, urgptr,options
+    seq, ack, dataofs, reserved, flags, window, chksum, urgptr,options
 
-If f is not specified or f = None, all fields will be fuzzed.
-#####2.reading from a csv file
+#####2 default tests on all fields
+to run this, simply run :
+
+    
+    tcpfuzzer = TCPFuzzer(source=source, dest=dest,sport=sport, dport=dport)
+    ipfuzzer.fuzz(all=True)
+    
+
+#####3.reading from a csv file
 to run this test:
 
-    ipfuzzer = IPFuzzer(source=source, dest=dest)
-    ipfuzzer.fuzz(file=file_name)
+    tcpfuzzer = TCPFuzzer(source=source, dest=dest,sport=sport, dport=dport)
+    tcpfuzzer.fuzz(file=file_name)
 
 file_name is the name of the file at the current directory.
 
@@ -122,7 +130,7 @@ First row the file indicate the name of the field corresponding to the values in
 Valid values for the first row are:
 
 
-    self, field_name='dport', all=False, num_trials=10
+      seq, ack, dataofs, reserved, flags, window, chksum, urgptr,options
 
 
 
@@ -133,8 +141,8 @@ The value of each cell should be a hex string within the range of the valid valu
 For example, a valid CSV file shoud look like:
 
 
-    ttl,len,version
-    0x11,0xf00f,0xf
+    seq, ack, dataofs
+    0x11,0x00,0xf
     0x01,,0xf
 
 #####3 Payload
@@ -148,49 +156,32 @@ Else the content of the file will be erased and recovered with the default value
 
 ####Application Layer Fuzzer
 
-The ip layer fuzzer is able to run three kinds of tests:
+The application layer fuzzer is able to run two kinds of tests:
 
-#####1.default tests
+#####1 payload with varied length
+it send a given number of packets with payload of varied lengths within a given range
+
 to run this test:
 
     
-    ipfuzzer.fuzz(field=f)
+    appfuzzer = APPFuzzer(source=src, dest=dest, sport=sport, dport=dport)
+    appfuzzer.fuzz(test=num, min_len=min,max_len=max)
     
 
-f is a list of fields name.
-
-valid values for items in f are:
-
-
-    ttl,len,proto,ihl,flags,frag,tos,id,chksum,version
-
+test field sets the number of tests to run. It should be a positive integer.
+min_len sets the minimum length in byte of the payload. It should be a positive integer as well.
+max_len sets the maximum length in byte of the payload. It should be greater than or equal to min_len and should be less then the payload limit indicated by Scapy ( e.g. should be less then 3000)
+ 
 
 #####2.reading from a csv file
 to run this test:
 
     
-    ipfuzzer.fuzz(file=file_name)
+    appfuzzer = APPFuzzer(source=src, dest=dest, sport=sport, dport=dport)
+    appfuzzer.fuzz(file=filename)
 
 file_name is the name of the file at the current directory.
 
-First row the file indicate the name of the field corresponding to the values in each column.
+Each row of the file contains one payload that is no greater than the largest payload Scapy can take.
 
-Valid values for the first row are:
-
-
-    ttl,len,proto,ihl,flags,frag,tos,id,chksum,version
-
-
-
-To skip fuzzing a field, simply leave the cell corresponding to that field empty.
-
-The value of each cell should be a hex string within the range of the valid values for that field.
-
-For example, a valid CSV file shoud look like:
-
-
-    ttl,len,version
-    0x11,0xf00f,0xf
-    0x01,,0xf
-
-
+The payload should be hex strings with no prefixes such as 0x or x/
