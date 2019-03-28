@@ -62,12 +62,7 @@ class TCPFuzzer(object):
                 print("using payload: 0x" + payloads[0])
             except ValueError:
                 print("%s cannot be parsed as hex" % (payloads[0]))
-                print("interpreting it as a normal string")
-                f = open(self._payload_addr, "w")
-                payload = "00"
-                f.write(payload)
-                f.close()
-                payload = bytes.fromhex("00")
+                raise FieldAttributeException
         except IOError:
             f = open(self._payload_addr, "w")
             payload = bytes.fromhex("00")
@@ -108,7 +103,12 @@ class TCPFuzzer(object):
     def fuzz(self, field_name='seq', all=False, num_trials=10,file=None):
         tcp = self.tcp
         r = []
-        self._payload = self._get_payload()
+        try:
+            self._payload = self._get_payload()
+        except FieldAttributeException:
+            print("terminating the program...")
+            return
+
         if all:
             for f in self.fields.keys():
                 self.fuzz(f)
