@@ -83,31 +83,27 @@ class IPFuzzer():
 
     def _fuzz_by_fields(self, fields=None,payload="0x00"):
         pckts = []
-        special_fields = set()
 
         if not fields:
             fields = self._field_val_map.keys()
 
         for field in fields:
             print("fuzzing %s..."%(field))
+
             ip = IP(dst=self._dest,src=self._source)  # create default packet
-
-            if field in special_fields:
-                pass  # do something special
-            else:
-                trial = range(int(self._field_val_map[field], 0) + 1)
-
+            trial = range(int(self._field_val_map[field], 0) + 1)
             for _ in trial:
                 setattr(ip, field, _)
                 pckts.append(ip/TCP(sport=self._sport, dport=self._dport)/payload)
+
         return pckts
 
 
     def fuzz(self, fields=None, file=None, all=False):
         payload = self._get_payload()
+
         if file:
             pckts = self._fuzz_from_file(file,payload)
-
         else:
             pckts = self._fuzz_by_fields(fields,payload)
 
