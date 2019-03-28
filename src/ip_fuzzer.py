@@ -113,7 +113,14 @@ class IPFuzzer():
         print("preparing to send %d packets" %(len(pckts)))
 
         for pckt in pckts:
-            sendp(Ether()/pckt, verbose=self.verbose)
+            try:
+                sendp(Ether() / pckt, verbose=self.verbose)
+            except OSError as err:
+                print(err)
+                print()
+                print("an error occurred while sending packets.")
+                print("terminating the program...")
+                return
 
         print("packets sent successfully")
         return

@@ -125,8 +125,17 @@ class TCPFuzzer(object):
                 setattr(tcp, field_name, i)
                 r.append(Ether() / self.ip / tcp / self._payload)
         for packet in r:
-            sendp(packet, verbose=self.verbose)
-            self.sent += 1
+            try:
+                sendp(packet, verbose=self.verbose)
+                self.sent += 1
+            except OSError as err:
+                print(err)
+                print()
+                print("an error occurred while sending packets.")
+                print("terminating the program...")
+                return
+
+
 
     def send(self, packet_list):
         for packet in packet_list:

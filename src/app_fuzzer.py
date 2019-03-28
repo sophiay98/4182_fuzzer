@@ -61,7 +61,15 @@ class APPFuzzer():
         print("sending packets to the server...")
         self.client.connect()
         for pckt in pckts:
-            self.client.send(pckt)
+            try:
+                self.client.send(pckt)
+            except OSError as err:
+                print(err)
+                print()
+                print("an error occurred while sending packets.")
+                print("is the length of the packets under 3000?")
+                print("terminating the program...")
+                return
         print("finished sending")
 
         print("total count: " + str(self.client.total))
