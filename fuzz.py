@@ -114,7 +114,7 @@ if __name__ == "__main__":
             for field in args.tcp_field:
                 tcpfuzz.fuzz(field)
         elif args.tA:
-            tcpfuzz.fuzz(all=True)
+            tcpfuzz.fuzz(all=True,num_trials=N)
         elif args.Tfile_name:
             tcpfuzz.fuzz(file=args.Tfile_name)
     if args.A:
