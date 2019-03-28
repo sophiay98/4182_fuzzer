@@ -40,7 +40,7 @@ if __name__ == "__main__":
     parser.add_argument('-amin', action='store', dest='amin', default=1,
                         help='minimum length for payload')
     parser.add_argument('-amax', action='store', dest='amax', default=128,
-                        help='minimum length for payload')
+                        help='maximum length for payload')
     parser.add_argument('-L', "-len", action='store', dest='len', default=128,
                         help='length of the payload')
     tcp_fields = (
@@ -61,17 +61,20 @@ if __name__ == "__main__":
 
     ip_fields = ("len", "proto", "ihl",
                  "flags", "frag",
-                 "ttl")
+                 "ttl", "tos",
+                 "id",
+                 "chksum",
+                 "version")
     for f in ip_fields:
         parser.add_argument('-i' + f, action='append_const',
                             dest='ip_field', const=f, default=[],
                             help='Add ' + f + ' to IP fields for fuzzing')
 
     args = parser.parse_args()
-    print(args)
-    print(args.Tfile_name)
-    print(args.Tfile_name)
-    print(args.T)
+    # print(args)
+    # print(args.Tfile_name)
+    # print(args.Tfile_name)
+    # print(args.T)
 
     try:
         v = int(args.v)
@@ -82,11 +85,17 @@ if __name__ == "__main__":
         amax = int(args.amax)
         len = int(args.len)
     except ValueError:
-        "Wrong integer value given for verbosity, source port, or destination port."
+        "Wrong integer value given for fields expected to have integer values."
         sys.exit()
 
+    int_values = (v, sp, dp, N, amin, amax, len)
+    for i in int_values:
+        if i < 0:
+            print("All possible integer optional arguments has to be positive.")
+            sys.exit()
+
     if args.I:
-        ipfuzz = IPFuzzer(source=args.src,dest=args.dst, payload=args.payload_file, verbose=args.v)
+        ipfuzz = IPFuzzer(source=args.src, dest=args.dst, payload=args.payload_file, verbose=args.v)
         if not args.iA and not args.Ifile_name:
             ipfuzz.fuzz(fields=args.ip_field)
         elif args.iA:
@@ -94,7 +103,8 @@ if __name__ == "__main__":
         elif args.Ifile_name:
             ipfuzz.fuzz(file=args.Ifile_name)
     if args.T:
-        tcpfuzz = TCPFuzzer(source=args.src,dest=args.dst,sport=sp,dport=dp,payload=args.payload_file, verbose=args.v)
+        tcpfuzz = TCPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, payload=args.payload_file,
+                            verbose=args.v)
         if not args.tA and not args.Tfile_name:
             for field in args.tcp_field:
                 tcpfuzz.fuzz(field)
@@ -104,8 +114,8 @@ if __name__ == "__main__":
             print('asdf')
             tcpfuzz.fuzz(file=args.Tfile_name)
     if args.A:
-        appfuzz = APPFuzzer(source=args.src,dest=args.dst,sport=sp, dport=dp, verbose=v)
+        appfuzz = APPFuzzer(source=args.src, dest=args.dst, sport=sp, dport=dp, verbose=v)
         if args.Afile_name:
-            appfuzz.fuzz(test=N, size=len, file=args.Afile_name,min_len=amin, max_len=amax)
+            appfuzz.fuzz(test=N, size=len, file=args.Afile_name, min_len=amin, max_len=amax)
         else:
             appfuzz.fuzz(test=N, size=len, min_len=amin, max_len=amax)
