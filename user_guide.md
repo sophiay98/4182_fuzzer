@@ -157,11 +157,9 @@ file_name is the name of the file at the current directory.
 
 -N N field sets the number of tests to run. It has to be a positive integer.
 
--L LEN sets the  length in byte of the payload. It has to be a positive integer and less then the payload limit indicated by Scapy ( e.g. we recommend it to be less than 3000)
-
 Each row of the file contains one payload that is no greater than the largest payload Scapy can take.
 
-The payload should be hex strings with no prefixes such as 0x or x/
+The payload should be hex strings with no prefixes such as 0x or x/. It should not be an empty string and should not have a length logner then 3000.
 
 
 ####Server Comments
