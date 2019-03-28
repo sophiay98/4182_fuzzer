@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     if args.I:
         ipfuzz = IPFuzzer(source=args.src,dest=args.dst, payload=args.payload_file, verbose=args.v)
-        if not args.iA:
+        if not args.iA and not args.Ifile_name:
             ipfuzz.fuzz(fields=args.ip_field)
         elif args.iA:
             ipfuzz.fuzz(all=True)
@@ -104,7 +104,7 @@ if __name__ == "__main__":
             print('asdf')
             tcpfuzz.fuzz(file=args.Tfile_name)
     if args.A:
-        appfuzz = APPFuzzer(source=args.src,dest=args.dst,sport=sp, dport=dp, verbose=args.v)
+        appfuzz = APPFuzzer(source=args.src,dest=args.dst,sport=sp, dport=dp, verbose=v)
         if args.Afile_name:
             appfuzz.fuzz(test=args.N, size=len, file=args.Afile_name,min_len=amin, max_len=amax)
         else:
